@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User Logs Downloader</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #2d2d2d;
+            color: #fff;
+            user-select: none;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            background: #474747;
+        }
+
+        label {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #555;
+            border-radius: 4px;
+            background-color: #636363;
+            color: #fff;
+            font-size: 16px;
+            /* Adjust the font size here */
+        }
+
+        /* Custom arrow for Parameter 1 */
+        #param1 {
+            background: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right center;
+            background-position: calc(100% - 10px) center;
+            /* Adjust alignment */
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid #555;
+            border-radius: 4px;
+            background-color: #636363;
+            color: #fff;
+            padding-right: 30px;
+            /* Make space for the arrow */
+        }
+
+        #param1::-ms-expand {
+            display: none;
+        }
+
+        /* Adjust color of calendar icon in Parameter 2 */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            margin-left: -20px;
+        }
+
+        input[type="date"]::-ms-clear {
+            display: none;
+        }
+
+        #dateField {
+            display: flex;
+            align-items: center;
+        }
+
+        .arrow-button {
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        /* Name CSS */
+        .name-container {
+            position: fixed;
+            bottom: 10px;
+            /* Adjust this value to control the vertical position */
+            right: 10px;
+            /* Adjust this value to control the horizontal position */
+            background-color: #2d2d2d;
+            /* Background color for visibility */
+            padding: 5px;
+            /* Padding for the text */
+            border: 1px solid #ccc;
+            /* Border for styling */
+            border-radius: 5px;
+            /* Rounded corners */
+        }
+
+        /* Style for the option selector */
+        .option-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .option-arrows {
+            display: flex;
+            align-items: center;
+        }
+
+        .option-arrows span {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>User Logs</h1>
+    <form id="urlForm">
+        <label for="param1">Client ID:</label>
+        <div class="option-selector">
+            <select id="param1" name="param1">
+                <option value="sun">SUN PHARMA</option>
+                <option value="sunem2">SUN EMERGING</option>
+                <option value="usv">USV</option>
+                <option value="drl">DR. READY</option>
+                <option value="alcp2">ALEMBIC</option>
+                <option value="almcp2">ALEMBIC (Local)</option>
+                <option value="jbcpl">JBCPL</option>
+                <option value="danone">DANONE</option>
+                <option value="hul">HUL</option>
+                <option value="cipla">CIPLA</option>
+                <option value="cipi">CIPLA INT</option>
+                <option value="cadila">CADILA</option>
+                <option value="gmem">GLEM</option>
+                <option value="biotics">BIOTICS</option>
+                <option value="apl">AUROBINDO</option>
+                <option value="inzpera">INZPERA HEALTH</option>
+                <option value="ajanta">AJANTA PHARMA</option>
+                <option value="chc">SUN CHC</option>
+                <option value="pghl">PNG</option>
+                <option value="aristocp2">ARISTO PHARMA</option>
+                <option value="gmlo">GMLO</option>
+                <option value="cipq">CIPQ</option>
+            </select>
+            <div class="option-arrows">
+                <span id="downArrow">↑</span>
+                <span id="upArrow">↓</span>
+            </div>
+        </div>
+        <label for="param2">Date:</label>
+        <div id="dateField">
+            <input type="date" id="param2" name="param2"><br><br>
+            <span class="arrow-button" id="backArrow">←</span>
+            <span class="arrow-button" id="forwardArrow">→</span>
+        </div>
+
+        <label for="param3">Rep Code:</label>
+        <input type="text" id="param3" name="param3"><br><br>
+
+        <button type="button" id="iOSLogs">iOS Logs</button>
+        <button type="button" id="AndroidLogs">Android Logs</button>
+        <button type="button" id="APILogs">API Logs</button>
+        <button type="button" id="AllLogs">ALL Live Logs</button>
+        <button type="button" id="iOSLocalLogs1">iOS Local Logs (GLUAT & ALEMBIC)</button>
+        <button type="button" id="iOSLocalLogs2">iOS Local Logs (OTHER)</button>
+        <button type="button" id="AndroidLocalLogs1">Android Local Logs (GLUAT & ALEMBIC)</button>
+        <button type="button" id="AndroidLocalLogs2">Android Local Logs (OTHER)</button>
+    </form>
+    <div class="name-container">
+        Made by Naeem
+    </div>
+
+    <script>
+
+        // iOS Logs
+        document.getElementById("iOSLogs").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            window.open(dynamicUrl, "_blank");
+        });
+
+        // iOS Logs GLUAT ALMCP2
+        document.getElementById("iOSLocalLogs1").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+            window.open(dynamicUrl, "_blank");
+        });
+
+        // iOS Logs GMLO, CIPQ, CIPP & OTHER
+        document.getElementById("iOSLocalLogs2").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+            window.open(dynamicUrl, "_blank");
+        });
+
+        // Android Logs
+        document.getElementById("AndroidLogs").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+            window.open(dynamicUrl, "_blank");
+        });
+        // Android Logs GLUAT ALMCP2
+        document.getElementById("AndroidLocalLogs1").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+            window.open(dynamicUrl, "_blank");
+        });
+        // iOS Logs GMLO, CIPQ, CIPP & OTHER
+        document.getElementById("AndroidLocalLogs2").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+            window.open(dynamicUrl, "_blank");
+        });
+        // Func to Formate Live/Local Logs Date
+        function formatDateForURL(dateString) {
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return dateString;
+        }
+        // API Logs
+        document.getElementById("APILogs").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForAPIURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param2Value}.txt`;
+
+            window.open(dynamicUrl, "_blank");
+        });
+        // Func to Formate API Logs Date
+        function formatDateForAPIURL(dateString) {
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[0]}${parts[1]}${parts[2]}`;
+            }
+            return dateString;
+        }
+
+        // All Logs
+        document.getElementById("AllLogs").addEventListener("click", function () {
+            const param1Value = encodeURIComponent(document.getElementById("param1").value);
+            const param2Value = formatDateForURL(document.getElementById("param2").value);
+            const param3Value = encodeURIComponent(document.getElementById("param3").value);
+            const param4Value = formatDateForAPIURL(document.getElementById("param2").value);
+
+            const iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`;
+            const androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`;
+            const apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+
+            window.open(iOSUrl, "_blank");
+            window.open(androidUrl, "_blank");
+            window.open(apiUrl, "_blank");
+        });
+
+        // Showing Todays Date Automatically
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('param2').value = today;
+
+        // Date Picker Arrow Script
+        const datePicker = document.getElementById('param2');
+        const backArrow = document.getElementById('backArrow');
+        const forwardArrow = document.getElementById('forwardArrow');
+        backArrow.addEventListener('click', () => {
+            const selectedDate = new Date(datePicker.value);
+            selectedDate.setDate(selectedDate.getDate() - 1);
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+        });
+        forwardArrow.addEventListener('click', () => {
+            const selectedDate = new Date(datePicker.value);
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+        });
+
+        // Option Arrow Script
+        const optionsSelect = document.getElementById('param1');
+        const downArrow = document.getElementById('downArrow');
+        const upArrow = document.getElementById('upArrow');
+        downArrow.addEventListener('click', () => {
+            const selectedIndex = optionsSelect.selectedIndex;
+            if (selectedIndex === 0) {
+                optionsSelect.selectedIndex = optionsSelect.options.length - 1;
+            } else {
+                optionsSelect.selectedIndex = selectedIndex - 1;
+            }
+        });
+        upArrow.addEventListener('click', () => {
+            const selectedIndex = optionsSelect.selectedIndex;
+            if (selectedIndex === optionsSelect.options.length - 1) {
+                optionsSelect.selectedIndex = 0;
+            } else {
+                optionsSelect.selectedIndex = selectedIndex + 1;
+            }
+        });
+    </script>
+</body>
+
+</html>
