@@ -1,0 +1,170 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #2d2d2d;
+    color: #fff;
+    user-select: none;
+}
+
+h1 {
+    text-align: center;
+    font-size: 36px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+form {
+    max-width: 600px;
+    margin: 15px auto;
+    padding: 30px;
+    border-radius: 10px;
+    background: #474747;
+}
+
+label {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #555;
+    border-radius: 4px;
+    background-color: #636363;
+    color: #fff;
+    font-size: 16px;
+    /* Adjust the font size here */
+}
+
+/* Custom arrow for Parameter 1 */
+#param1 {
+    background: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right center;
+    background-position: calc(100% - 10px) center;
+    /* Adjust alignment */
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid #555;
+    border-radius: 4px;
+    background-color: #636363;
+    color: #fff;
+    padding-right: 30px;
+    /* Make space for the arrow */
+}
+
+#param1::-ms-expand {
+    display: none;
+}
+
+/* Adjust color of calendar icon in Parameter 2 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    margin-left: -20px;
+}
+
+input[type="date"]::-ms-clear {
+    display: none;
+}
+
+#dateField {
+    display: flex;
+    align-items: center;
+}
+
+.arrow-button {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+button:hover {
+    background-color: #3e8e41;
+}
+
+/* Name CSS */
+.name-container {
+    position: fixed;
+    bottom: 10px;
+    /* Adjust this value to control the vertical position */
+    right: 10px;
+    /* Adjust this value to control the horizontal position */
+    background-color: #2d2d2d;
+    /* Background color for visibility */
+    padding: 5px;
+    /* Padding for the text */
+    border: 1px solid #ccc;
+    /* Border for styling */
+    border-radius: 5px;
+    /* Rounded corners */
+}
+
+/* Style for the option selector */
+.option-selector {
+    display: flex;
+    align-items: center;
+}
+
+.option-arrows {
+    display: flex;
+    align-items: center;
+}
+
+.option-arrows span {
+    cursor: pointer;
+    margin-left: 10px;
+}
+/* CheckBox Container */
+.checkBoxDiv {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+    margin-bottom: 10px;
+}
+.checkBoxDiv > div {
+    margin-right: 15px; /* Adjust the margin as needed */
+    margin-left: 0px;
+    white-space: nowrap; /* Prevent divs from wrapping */
+}
+.hidden {
+    display: none;
+}
+ /* Dropdown container styles */
+ #dropdownContainer {
+    margin-left: 5px;
+}
+
+/* Dropdown styles */
+#localDrop {
+    background: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right center;
+    background-position: calc(100% - 10px) center;
+    /* Adjust alignment */
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid #555;
+    border-radius: 4px;
+    background-color: #636363;
+    color: #fff;
+    padding-right: 35px;
+    /* Make space for the arrow */
+}
+#localDrop::-ms-expand {
+    display: none;
+}
+#myCheckbox {
+    transform: scale(1.1); /* Adjust the scale factor as needed */
+    width: 30px;
+}

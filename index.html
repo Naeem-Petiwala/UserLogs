@@ -3,138 +3,7 @@
 
 <head>
     <title>User Logs Downloader</title>
-    <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #2d2d2d;
-            color: #fff;
-            user-select: none;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 36px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        form {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-            background: #474747;
-        }
-
-        label {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 8px 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: 2px solid #555;
-            border-radius: 4px;
-            background-color: #636363;
-            color: #fff;
-            font-size: 16px;
-            /* Adjust the font size here */
-        }
-
-        /* Custom arrow for Parameter 1 */
-        #param1 {
-            background: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right center;
-            background-position: calc(100% - 10px) center;
-            /* Adjust alignment */
-            appearance: none;
-            -webkit-appearance: none;
-            border: 2px solid #555;
-            border-radius: 4px;
-            background-color: #636363;
-            color: #fff;
-            padding-right: 30px;
-            /* Make space for the arrow */
-        }
-
-        #param1::-ms-expand {
-            display: none;
-        }
-
-        /* Adjust color of calendar icon in Parameter 2 */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            margin-left: -20px;
-        }
-
-        input[type="date"]::-ms-clear {
-            display: none;
-        }
-
-        #dateField {
-            display: flex;
-            align-items: center;
-        }
-
-        .arrow-button {
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        button {
-            width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-
-        button:hover {
-            background-color: #3e8e41;
-        }
-
-        /* Name CSS */
-        .name-container {
-            position: fixed;
-            bottom: 10px;
-            /* Adjust this value to control the vertical position */
-            right: 10px;
-            /* Adjust this value to control the horizontal position */
-            background-color: #2d2d2d;
-            /* Background color for visibility */
-            padding: 5px;
-            /* Padding for the text */
-            border: 1px solid #ccc;
-            /* Border for styling */
-            border-radius: 5px;
-            /* Rounded corners */
-        }
-
-        /* Style for the option selector */
-        .option-selector {
-            display: flex;
-            align-items: center;
-        }
-
-        .option-arrows {
-            display: flex;
-            align-items: center;
-        }
-
-        .option-arrows span {
-            cursor: pointer;
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -142,30 +11,7 @@
     <form id="urlForm">
         <label for="param1">Client ID:</label>
         <div class="option-selector">
-            <select id="param1" name="param1">
-                <option value="sun">SUN PHARMA</option>
-                <option value="sunem2">SUN EMERGING</option>
-                <option value="usv">USV</option>
-                <option value="drl">DR. READY</option>
-                <option value="alcp2">ALEMBIC</option>
-                <option value="almcp2">ALEMBIC (Local)</option>
-                <option value="jbcpl">JBCPL</option>
-                <option value="danone">DANONE</option>
-                <option value="hul">HUL</option>
-                <option value="cipla">CIPLA</option>
-                <option value="cipi">CIPLA INT</option>
-                <option value="cadila">CADILA</option>
-                <option value="gmem">GLEM</option>
-                <option value="biotics">BIOTICS</option>
-                <option value="apl">AUROBINDO</option>
-                <option value="inzpera">INZPERA HEALTH</option>
-                <option value="ajanta">AJANTA PHARMA</option>
-                <option value="chc">SUN CHC</option>
-                <option value="pghl">PNG</option>
-                <option value="aristocp2">ARISTO PHARMA</option>
-                <option value="gmlo">GMLO</option>
-                <option value="cipq">CIPQ</option>
-            </select>
+            <select id="param1" name="param1"></select>
             <div class="option-arrows">
                 <span id="downArrow">↑</span>
                 <span id="upArrow">↓</span>
@@ -181,6 +27,15 @@
         <label for="param3">Rep Code:</label>
         <input type="text" id="param3" name="param3"><br><br>
 
+        <div class="checkBoxDiv">
+            <div class="checkBoxContainer">
+                <label for="myCheckbox">LIVE</label>
+                <input type="checkbox" id="myCheckbox" checked>
+            </div>
+            <div id="dropdownContainer" class="hidden">
+                <select id="localDrop"></select>
+            </div>
+        </div>
         <button type="button" id="iOSLogs">iOS Logs</button>
         <button type="button" id="AndroidLogs">Android Logs</button>
         <button type="button" id="APILogs">API Logs</button>
@@ -332,6 +187,79 @@
                 optionsSelect.selectedIndex = selectedIndex + 1;
             }
         });
+
+        // Get the checkbox and dropdown elements
+        var checkbox = document.getElementById('myCheckbox');
+        var mainDropDown = document.getElementById('param1');
+        var localDropDown = document.getElementById('localDrop');
+        var dropdownContainer = document.getElementById('dropdownContainer');
+
+
+        // Define two arrays of options
+        var LiveArray = [
+            { value: 'sun', text: 'SUN PHARMA' },
+            { value: 'usv', text: 'USV' },
+            { value: 'sunem2', text: 'SUN EMERGING' },
+            { value: 'hul', text: 'HUL' },
+            { value: 'cipla', text: 'CIPLA' },
+            { value: 'apl', text: 'AUROBINDO' },
+            { value: 'drl', text: 'DR. REDDY' },
+            { value: 'alcp2', text: 'ALEMBIC' },
+            { value: 'jbcpl', text: 'JBCPL' },
+            { value: 'chc', text: 'SUN CHC' },
+            { value: 'danone', text: 'DANONE' },
+            { value: 'gmem', text: 'GLEM' },
+            { value: 'biotics', text: 'BIOTICS' },
+            { value: 'glenmark', text: 'GLM' },
+            { value: 'inzpera', text: 'INZPERA HEALTH' },
+            { value: 'ajanta', text: 'AJANTA PHARMA' },
+            { value: 'pghl', text: 'PNG' },
+            { value: 'arcp2', text: 'ARISTO PHARMA' },
+            { value: 'aurogen', text: 'AURO INDONESIA' },
+        ];
+
+        var LocalArray = [
+            { value: 'gmlo', text: 'GMLO' },
+            { value: 'cipq', text: 'CIPQ' }
+        ];
+// Method to fill Main Dropdown
+        function updateMainDropdown(options) {
+            mainDropDown.innerHTML = '';
+            for (var i = 0; i < options.length; i++) {
+                var option = document.createElement('option');
+                option.value = options[i].value;
+                option.text = options[i].text;
+                mainDropDown.add(option);
+            }
+        }
+        // Checkbox state
+        checkbox.addEventListener('change', function () {
+            dropdownContainer.classList.toggle('hidden', checkbox.checked);
+            if (checkbox.checked) {
+                updateMainDropdown(LiveArray); // When Checked
+            } else {
+                updateMainDropdown(LocalArray); // When Unchecked
+                updateDropdown(LocalLinks); // Local Link Option
+            }
+        });
+        updateMainDropdown(LiveArray); // After Refresh
+
+        var LocalLinks = [
+            { value: 'option1', text: 'STORAGE GP' },
+            { value: 'option2', text: 'LOCAL 5.0' }
+        ];
+
+        function updateDropdown(options) {
+            localDropDown.innerHTML = '';
+            for (var i = 0; i < options.length; i++) {
+                var option = document.createElement('option');
+                option.value = options[i].value;
+                option.text = options[i].text;
+                localDropDown.add(option);
+            }
+        }
+        updateDropdown(LocalLinks);
+
     </script>
 </body>
 
