@@ -1,8 +1,9 @@
 body {
     font-family: 'Open Sans', sans-serif;
-    background-color: #2d2d2d;
-    color: #fff;
+    background-color: #1e4e4e;
+    color: #a4d1c1;
     user-select: none;
+    letter-spacing: 1.5px;
 }
 
 h1 {
@@ -10,33 +11,36 @@ h1 {
     font-size: 36px;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin: 20px auto;
 }
 
 form {
     max-width: 600px;
     margin: 15px auto;
-    padding: 30px;
-    border-radius: 10px;
-    background: #474747;
+    padding: 25px;
+    border-radius: 25px;
+    background: #1b4141;
 }
 
+/* ALL LABEL */
 label {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 500;
 }
 
 input,
 select {
     width: 100%;
     padding: 8px 10px;
-    margin: 8px 0;
+    margin: 10px 0;
     box-sizing: border-box;
-    border: 2px solid #555;
+    border: 2px solid #1e4e4e;
     border-radius: 4px;
-    background-color: #636363;
-    color: #fff;
-    font-size: 16px;
-    /* Adjust the font size here */
+    background-color: #1e4e4e;
+    color: #a4d1c1;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
 }
 
 /* Custom arrow for Parameter 1 */
@@ -46,12 +50,11 @@ select {
     /* Adjust alignment */
     appearance: none;
     -webkit-appearance: none;
-    border: 2px solid #555;
+    border: 2px solid #1e4e4e;
     border-radius: 4px;
-    background-color: #636363;
-    color: #fff;
+    background-color: #1e4e4e;
+    color: #a4d1c1;
     padding-right: 30px;
-    /* Make space for the arrow */
 }
 
 #param1::-ms-expand {
@@ -73,44 +76,65 @@ input[type="date"]::-ms-clear {
     align-items: center;
 }
 
+#RepField {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .arrow-button {
     cursor: pointer;
     margin-left: 5px;
 }
 
-button {
+.downloadBtn {
     width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
+    background-color: #1e4e4e;
+    color: #a4d1c1;
+    padding: 9px 20px;
+    margin: 8px 0 auto;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 2px;
+    font-size: 18px;
+    text-align: center;
+    text-decoration: none;
 }
 
 button:hover {
     background-color: #3e8e41;
 }
 
-/* Name CSS */
+/* Author Name CSS */
 .name-container {
     position: fixed;
     bottom: 10px;
-    /* Adjust this value to control the vertical position */
     right: 10px;
-    /* Adjust this value to control the horizontal position */
     background-color: #2d2d2d;
-    /* Background color for visibility */
     padding: 5px;
-    /* Padding for the text */
-    border: 1px solid #ccc;
-    /* Border for styling */
+    border: 1px solid #6fb2b2;
     border-radius: 5px;
-    /* Rounded corners */
+    color: #6fb2b2;
+}
+
+#combBtn {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
+.button {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    background-color: #3498db;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
 /* Style for the option selector */
@@ -128,43 +152,62 @@ button:hover {
     cursor: pointer;
     margin-left: 10px;
 }
+
 /* CheckBox Container */
 .checkBoxDiv {
     display: flex;
-    align-items: center; /* Vertically center the items */
-    margin-bottom: 10px;
+    align-items: center;
+    /* Vertically center the items */
+    justify-content: center;
+    /* Horizontally center the items */
+    align-items: center;
+    /* Horizontally center the items */
+    margin-top: 0px;
+    margin-left: 25px;
+    margin-right: 0px;
+
 }
-.checkBoxDiv > div {
-    margin-right: 15px; /* Adjust the margin as needed */
+
+.checkBoxDiv>div {
+    margin-right: 15px;
+    /* Adjust the margin as needed */
     margin-left: 0px;
-    white-space: nowrap; /* Prevent divs from wrapping */
+    white-space: nowrap;
+    /* Prevent divs from wrapping */
 }
+
 .hidden {
     display: none;
 }
- /* Dropdown container styles */
- #dropdownContainer {
+
+/* Dropdown container styles */
+#dropdownContainer {
     margin-left: 5px;
 }
 
 /* Dropdown styles */
+
 #localDrop {
     background: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right center;
     background-position: calc(100% - 10px) center;
     /* Adjust alignment */
     appearance: none;
     -webkit-appearance: none;
-    border: 2px solid #555;
-    border-radius: 4px;
-    background-color: #636363;
-    color: #fff;
-    padding-right: 35px;
-    /* Make space for the arrow */
+    border: 2px solid #1e4e4e;
+    border-radius: 10px;
+    background-color: #1e4e4e;
+    color: #a4d1c1;
+    padding-right: 30px;
+    width: 200px;
+    margin: 8px auto;
 }
+
 #localDrop::-ms-expand {
     display: none;
 }
+
 #myCheckbox {
-    transform: scale(1.1); /* Adjust the scale factor as needed */
+    transform: scale(1.1);
+    /* Adjust the scale factor as needed */
     width: 30px;
 }
