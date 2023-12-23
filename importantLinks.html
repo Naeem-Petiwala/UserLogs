@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e4e4e;
+            margin: 0;
+            padding: 0;
+            letter-spacing: 1.5px;
+        }
+
+        header {
+            background-color: #1e4e4e;
+            color: #a4d1c1;
+            padding: 20px auto 10px;
+            text-align: center;
+
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #1b4141;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #a4d1c1;
+            color: #a4d1c1;
+        }
+
+        th {
+            background-color: #1b4141;
+            color: #a4d1c1;
+            padding: 15px;
+            font-size: 20px;
+        }
+
+        button.copyButton,
+        button.openButton,
+        #backButton {
+            background-color: #1e4e4e;
+            color: #a4d1c1;
+            transition: background-color 0.3s ease;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 2px;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        button.copyButton:hover,
+        button.openButton:hover,
+        #backButton:hover {
+            background-color: #27ae60;
+        }
+
+        .name-container {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #2d2d2d;
+            padding: 5px;
+            border: 1px solid #6fb2b2;
+            border-radius: 5px;
+            color: #6fb2b2;
+        }
+
+        #backButton {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #1b4141;
+        }
+    </style>
+    <title>IMPORTANT LINKS</title>
+</head>
+
+<body>
+
+    <header>
+        <h1>IMPORTANT LINKS</h1>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>NAME</th>
+                <th>LINKS</th>
+                <th>NOTES</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>RELEASE NOTES (iOS)</td>
+                <td><button class="openButton"
+                        data-link="https://cirrius-my.sharepoint.com/:x:/p/vikas_yadav/EUZY748-dK9NqdWM8NoAdFwBhwS2t5y03B2ncGWBc71l7w?e=ni0kwE"
+                        target="_blank">Open Link</button></td>
+                <td>iOS Release Note</td>
+            </tr>
+            <tr>
+                <td>DAILY TASK LIST (iOS)</td>
+                <td><button class="openButton"
+                        data-link="https://cirrius.sharepoint.com/:x:/g/ETO2dLn4x5RNmOPhiII3puQB4ZU4kjnq9Qv1yeapLF6RMQ?e=XDMeTd"
+                        target="_blank">Open Link</button></td>
+                <td>iOS DAILY TASK SHEET</td>
+            </tr>
+            <tr>
+                <td>PHYZII DATABASE</td>
+                <td><button class="openButton"
+                        data-link="https://docs.google.com/spreadsheets/d/1P1nBlQpzFE6EExv28l7CW8G5bDFsaZqEKtchrd64QCI/edit?usp=sharing"
+                        target="_blank">Open Link</button></td>
+                <td>IMPORTANT FLAGS</td>
+            </tr>
+            <tr>
+                <td>CRASHLYTICS</td>
+                <td><button class="openButton"
+                        data-link="https://console.firebase.google.com/u/2/project/phyzii-e8407/overview">OPEN
+                        Link</button></td>
+                <td>CHECK APP CRASH REPORT</td>
+            </tr>
+            <tr>
+                <td>iPHONE/MOBILE LIVE URL</td>
+                <td><button class="copyButton" data-value="MobileLive">Copy Link</button></td>
+                <td>MOBILE DEVICE LIVE URL</td>
+            </tr>
+            <tr>
+                <td>iPAD/TAB LIVE URL</td>
+                <td><button class="copyButton" data-value="TabLive">Copy Link</button></td>
+                <td>TAB DEVICE LIVE URL</td>
+            </tr>
+            <tr>
+                <td>STORAGEGPWORKER</td>
+                <td><button class="copyButton" data-value="StorageGP">Copy Link</button></td>
+                <td>GLUAT, ALEMBIC (LOCAL)</td>
+            </tr>
+            <tr>
+                <td>AJDEV</td>
+                <td><button class="copyButton" data-value="Ajdev">Copy Link</button></td>
+                <td>AJDEV (LOCAL)</td>
+            </tr>
+            <tr>
+                <td>LOCAL5.0</td>
+                <td><button class="copyButton" data-value="Local">Copy Link</button></td>
+                <td>OTHER (LOCAL)</td>
+            </tr>
+            <tr>
+                <td>TEXT TO LINK</td>
+                <td><button class="openButton" data-link="https://www.htmlstrip.com/text-to-link-converter">OPEN
+                        Link</button></td>
+                <td>CONVERT TEXT INTO LINK</td>
+            </tr>
+            <tr>
+                <td>DEVGLAN</td>
+                <td><button class="openButton"
+                        data-link="https://www.devglan.com/online-tools/aes-encryption-decryption">OPEN Link</button>
+                </td>
+                <td>TEXT ENCRYPT DECRYPT</td>
+            </tr>
+            <tr>
+                <td>JWT</td>
+                <td><button class="openButton" data-link="https://jwt.io/">OPEN Link</button></td>
+                <td>TOKEN ENCODE DECODE</td>
+            </tr>
+            <tr>
+                <td>PHYZII DATABASE 2</td>
+                <td><button class="openButton"
+                        data-link="https://docs.google.com/spreadsheets/d/1vceO43Qz9texbRp2VZ70Y2mnVzV8kb-YuRtMoAMXiew/edit?usp=sharing">OPEN
+                        LINK</button></td>
+                <td>IMPORTANT FLAGS</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="name-container">
+        Naeem
+    </div>
+
+
+
+    <button id="backButton">Go Back</button>
+
+
+
+    <script>
+        const buttons = document.querySelectorAll('.copyButton');
+        const dictionary = {
+            TabLive: 'https://cirriusindiacentralstor.blob.core.windows.net/clientid/cp2urls/cp2liveurlversion5https_v4.zip',
+            MobileLive: 'https://cirriusindiacentralstor.blob.core.windows.net/clientid/cp2urls/cp2liveurlversion5.zip',
+            StorageGP: 'https://storagegpworker.blob.core.windows.net/clientid/cp2urls/cp2urlversion4_5_0.zip',
+            Local: 'https://cirriusapilogscript.blob.core.windows.net/clientid/cp2urls/cp2urlversion4_5_0.zip',
+            Ajdev: 'https://storagegpworker.blob.core.windows.net/clientid/cp2urls/cp2urlversion4_4_1.zip',
+        };
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const valueToCopy = dictionary[button.dataset.value];
+                navigator.clipboard.writeText(valueToCopy)
+                    .then(() => {
+                        alert('Link copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+            });
+        });
+
+        var openButtons = document.querySelectorAll('.openButton');
+        openButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var linkToOpen = this.getAttribute('data-link');
+                window.open(linkToOpen, '_blank');
+            });
+        });
+
+
+        document.getElementById("backButton").addEventListener("click", function () {
+            dynamicUrl = `index.html`
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

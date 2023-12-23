@@ -1,58 +1,105 @@
 // iOS Logs
 document.getElementById("iOSLogs").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-    window.open(dynamicUrl, "_blank");
+    logsDownload("iOS", "Live");
 });
 
 // iOS Logs GLUAT ALMCP2
-document.getElementById("iOSLocalLogs1").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-
-    window.open(dynamicUrl, "_blank");
-});
-
-// iOS Logs GMLO, CIPQ, CIPP & OTHER
-document.getElementById("iOSLocalLogs2").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-
-    window.open(dynamicUrl, "_blank");
+document.getElementById("iOSLocal").addEventListener("click", function () {
+    logsDownload("iOS", "/Local");
 });
 
 // Android Logs
 document.getElementById("AndroidLogs").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
-    window.open(dynamicUrl, "_blank");
+    logsDownload("Android", "Live");
 });
 // Android Logs GLUAT ALMCP2
-document.getElementById("AndroidLocalLogs1").addEventListener("click", function () {
+document.getElementById("AndroidLocal").addEventListener("click", function () {
+    logsDownload("Android", "Local");
+});
+
+// API Logs
+document.getElementById("APILogs").addEventListener("click", function () {
+    logsDownload("API", "Live");
+});
+// All Logs
+document.getElementById("AllLogs").addEventListener("click", function () {
+    logsDownload("AllLogs", "Live");
+});
+// UPW Logs
+document.getElementById("UPWLogs").addEventListener("click", function () {
+    logsDownload("UPW", "Live");
+});
+// Next Page
+document.getElementById("ImpBtn").addEventListener("click", function () {
+    dynamicUrl = `importantLinks.html`
+    window.location.href = dynamicUrl;
+    // window.open(dynamicUrl, "_blank");
+});
+
+function logsDownload(deviceType, linkType) {
     const param1Value = encodeURIComponent(document.getElementById("param1").value);
     const param2Value = formatDateForURL(document.getElementById("param2").value);
     const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+    const param4Value = formatDateForAPIURL(document.getElementById("param2").value);
+    const param5Value = encodeURIComponent(document.getElementById("localDrop").value);
+    let dynamicUrl = ""
+    if (deviceType === "iOS") {
+
+        if (linkType === "Live") {
+
+            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+        } else {
+
+            if (param5Value === "storageGP") {
+
+                dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+            } else if (param5Value === "local5.0") {
+
+                dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+            }
+        }
+    } else if (deviceType === "Android") {
+
+        if (linkType === "Live") {
+
+            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+        } else {
+            if (param5Value === "storageGP") {
+
+                dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+            } else if (param5Value === "local5.0") {
+
+                dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+            }
+        }
+    } else if (deviceType === "API") {
+        if (linkType === "Live") {
+            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+        }
+    } else if (deviceType === "UPW") {
+        dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
+    } else {
+
+        const iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`;
+        const androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`;
+        const apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+
+        window.open(iOSUrl, "_blank");
+        window.open(androidUrl, "_blank");
+        window.open(apiUrl, "_blank");
+        return;
+    }
 
     window.open(dynamicUrl, "_blank");
-});
-// iOS Logs GMLO, CIPQ, CIPP & OTHER
-document.getElementById("AndroidLocalLogs2").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
 
-    window.open(dynamicUrl, "_blank");
-});
+}
+
 // Func to Formate Live/Local Logs Date
 function formatDateForURL(dateString) {
     const parts = dateString.split('-');
@@ -61,15 +108,7 @@ function formatDateForURL(dateString) {
     }
     return dateString;
 }
-// API Logs
-document.getElementById("APILogs").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForAPIURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param2Value}.txt`;
 
-    window.open(dynamicUrl, "_blank");
-});
 // Func to Formate API Logs Date
 function formatDateForAPIURL(dateString) {
     const parts = dateString.split('-');
@@ -78,22 +117,6 @@ function formatDateForAPIURL(dateString) {
     }
     return dateString;
 }
-
-// All Logs
-document.getElementById("AllLogs").addEventListener("click", function () {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
-    const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
-    const param4Value = formatDateForAPIURL(document.getElementById("param2").value);
-
-    const iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`;
-    const androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`;
-    const apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
-
-    window.open(iOSUrl, "_blank");
-    window.open(androidUrl, "_blank");
-    window.open(apiUrl, "_blank");
-});
 
 // Showing Todays Date Automatically
 var today = new Date().toISOString().split('T')[0];
@@ -153,7 +176,7 @@ var LiveArray = [
     { value: 'jbcpl', text: 'JBCPL' },
     { value: 'chc', text: 'SUN CHC' },
     { value: 'danone', text: 'DANONE' },
-    { value: 'gmem', text: 'GLEM' },
+    { value: 'glmrk', text: 'GLEM' },
     { value: 'biotics', text: 'BIOTICS' },
     { value: 'glenmark', text: 'GLM' },
     { value: 'inzpera', text: 'INZPERA HEALTH' },
@@ -161,12 +184,16 @@ var LiveArray = [
     { value: 'pghl', text: 'PNG' },
     { value: 'arcp2', text: 'ARISTO PHARMA' },
     { value: 'aurogen', text: 'AURO INDONESIA' },
+    { value: 'metr', text: 'METROPOLIS' },
+    { value: '', text: 'SOFTDEAL PRIVATE' }
 ];
 
 var LocalArray = [
     { value: 'gmlo', text: 'GMLO' },
-    { value: 'cipq', text: 'CIPQ' }
+    { value: 'cipq', text: 'CIPQ' },
+    { value: 'almcp2', text: 'ALEMBIC LOCAL' }
 ];
+
 // Method to fill Main Dropdown
 function updateMainDropdown(options) {
     mainDropDown.innerHTML = '';
@@ -182,11 +209,8 @@ function hideLiveBtn() {
     AndroidLogs.classList.add('hidden')
     APILogs.classList.add('hidden')
     AllLogs.classList.add('hidden')
-    iOSLocalLogs1.classList.remove('hidden')
-    iOSLocalLogs2.classList.remove('hidden')
-    AndroidLocalLogs1.classList.remove('hidden')
-    AndroidLocalLogs2.classList.remove('hidden')
-    // UPWLogs.classList.add('hidden')
+    iOSLocal.classList.remove('hidden')
+    AndroidLocal.classList.remove('hidden')
 }
 
 function hideLocalBtn() {
@@ -194,12 +218,10 @@ function hideLocalBtn() {
     AndroidLogs.classList.remove('hidden')
     APILogs.classList.remove('hidden')
     AllLogs.classList.remove('hidden')
-    iOSLocalLogs1.classList.add('hidden')
-    iOSLocalLogs2.classList.add('hidden')
-    AndroidLocalLogs1.classList.add('hidden')
-    AndroidLocalLogs2.classList.add('hidden')
-    // UPWLogs.classList.add('hidden')
+    iOSLocal.classList.add('hidden')
+    AndroidLocal.classList.add('hidden')
 }
+
 // Checkbox state
 checkbox.addEventListener('change', function () {
     dropdownContainer.classList.toggle('hidden', checkbox.checked);
@@ -214,8 +236,8 @@ checkbox.addEventListener('change', function () {
 });
 
 var LocalLinks = [
-    { value: 'option1', text: 'STORAGE GP' },
-    { value: 'option2', text: 'LOCAL 5.0' }
+    { value: 'storageGP', text: 'STORAGE GP' },
+    { value: 'local5.0', text: 'LOCAL 5.0' }
 ];
 
 function updateDropdown(options) {
