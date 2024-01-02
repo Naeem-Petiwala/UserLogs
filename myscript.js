@@ -170,6 +170,8 @@ var LiveArray = [
     { value: 'sunem2', text: 'SUN EMERGING' },
     { value: 'hul', text: 'HUL' },
     { value: 'cipla', text: 'CIPLA' },
+    { value: 'glenmark', text: 'GLENMARK' },
+    { value: 'cadila', text: 'CADILA' },
     { value: 'apl', text: 'AUROBINDO' },
     { value: 'drl', text: 'DR. REDDY' },
     { value: 'alcp2', text: 'ALEMBIC' },
@@ -178,20 +180,26 @@ var LiveArray = [
     { value: 'danone', text: 'DANONE' },
     { value: 'glmrk', text: 'GLEM' },
     { value: 'biotics', text: 'BIOTICS' },
-    { value: 'glenmark', text: 'GLM' },
     { value: 'inzpera', text: 'INZPERA HEALTH' },
     { value: 'ajanta', text: 'AJANTA PHARMA' },
     { value: 'pghl', text: 'PNG' },
     { value: 'arcp2', text: 'ARISTO PHARMA' },
     { value: 'aurogen', text: 'AURO INDONESIA' },
     { value: 'metr', text: 'METROPOLIS' },
-    { value: '', text: 'SOFTDEAL PRIVATE' }
+    { value: 'sdpl', text: 'SOFTDEAL PRIVATE' },
+    { value: 'cipi', text: 'CIPLA INTERNATIONAL' },
+    { value: 'mega', text: 'MEGA' },
+    { value: 'bayer', text: 'BAYER' },
+    { value: 'higen', text: 'HIGEN' },
+    { value: 'thyrocare', text: 'THYROCARE' },
+    { value: 'cadvet', text: 'VETNOVA' }
 ];
 
 var LocalArray = [
     { value: 'gmlo', text: 'GMLO' },
     { value: 'cipq', text: 'CIPQ' },
-    { value: 'almcp2', text: 'ALEMBIC LOCAL' }
+    { value: 'almcp2', text: 'ALEMBIC LOCAL' },
+    { value: 'gluat', text: 'GLUAT' }
 ];
 
 // Method to fill Main Dropdown
@@ -211,6 +219,7 @@ function hideLiveBtn() {
     AllLogs.classList.add('hidden')
     iOSLocal.classList.remove('hidden')
     AndroidLocal.classList.remove('hidden')
+    UPWLogs.classList.add('hidden')
 }
 
 function hideLocalBtn() {
@@ -220,6 +229,7 @@ function hideLocalBtn() {
     AllLogs.classList.remove('hidden')
     iOSLocal.classList.add('hidden')
     AndroidLocal.classList.add('hidden')
+    UPWLogs.classList.remove('hidden')
 }
 
 // Checkbox state
