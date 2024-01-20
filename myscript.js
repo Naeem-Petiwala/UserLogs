@@ -188,7 +188,6 @@ var LiveArray = [
     { value: 'metr', text: 'METROPOLIS' },
     { value: 'sdpl', text: 'SOFTDEAL PRIVATE' },
     { value: 'cipi', text: 'CIPLA INTERNATIONAL' },
-    { value: 'mega', text: 'MEGA' },
     { value: 'bayer', text: 'BAYER' },
     { value: 'higen', text: 'HIGEN' },
     { value: 'thyrocare', text: 'THYROCARE' },
