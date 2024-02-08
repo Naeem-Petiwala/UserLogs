@@ -30,11 +30,11 @@ document.getElementById("UPWLogs").addEventListener("click", function () {
     logsDownload("UPW", "Live");
 });
 // Next Page
-document.getElementById("ImpBtn").addEventListener("click", function () {
-    dynamicUrl = `importantLinks.html`
-    window.location.href = dynamicUrl;
-    // window.open(dynamicUrl, "_blank");
-});
+// document.getElementById("ImpBtn").addEventListener("click", function () {
+//     dynamicUrl = `importantLinks.html`
+//     window.location.href = dynamicUrl;
+//     // window.open(dynamicUrl, "_blank");
+// });
 
 function logsDownload(deviceType, linkType) {
     const param1Value = encodeURIComponent(document.getElementById("param1").value);
@@ -47,7 +47,14 @@ function logsDownload(deviceType, linkType) {
 
         if (linkType === "Live") {
 
-            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            if (param1Value === "sunem1") {
+
+                dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+            } else {
+
+                dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            }
 
         } else {
 
@@ -64,9 +71,16 @@ function logsDownload(deviceType, linkType) {
     } else if (deviceType === "Android") {
 
         if (linkType === "Live") {
+            if (linkType === "Live") {
 
-            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
-
+                if (param1Value === "sunem1") {
+    
+                    dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+    
+                } else {
+                    dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                }
+            }
         } else {
             if (param5Value === "storageGP") {
 
@@ -193,7 +207,8 @@ var LiveArray = [
     { value: 'thyrocare', text: 'THYROCARE' },
     { value: 'cadvet', text: 'VETNOVA' },
     { value: 'mega', text: 'MEGACARE' },
-    { value: 'sunem1', text: 'SUNRD' }
+    { value: 'sunem1', text: 'SUNRD' },
+    { value: 'cpc', text: 'CPC DIAGNOSTIC' }
 ];
 
 var LocalArray = [
