@@ -30,11 +30,12 @@ document.getElementById("UPWLogs").addEventListener("click", function () {
     logsDownload("UPW", "Live");
 });
 // Next Page
-// document.getElementById("ImpBtn").addEventListener("click", function () {
-//     dynamicUrl = `importantLinks.html`
-//     window.location.href = dynamicUrl;
-//     // window.open(dynamicUrl, "_blank");
-// });
+document.getElementById("ImpBtn").addEventListener("click", function () {
+    alert("Coming Soon");
+    // dynamicUrl = `importantLinks.html`
+    // window.location.href = dynamicUrl;
+    // window.open(dynamicUrl, "_blank");
+});
 
 function logsDownload(deviceType, linkType) {
     const param1Value = encodeURIComponent(document.getElementById("param1").value);
