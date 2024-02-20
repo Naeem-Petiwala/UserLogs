@@ -279,3 +279,32 @@ function updateDropdown(options) {
 updateMainDropdown(LiveArray); // After Refresh
 updateDropdown(LocalLinks); // After Refresh
 hideLocalBtn(); // After Refresh
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('keydown', function(event) {
+        // Check if the pressed key is an arrow key
+        if (event.key === 'ArrowLeft') {
+            const selectedDate = new Date(datePicker.value);
+            selectedDate.setDate(selectedDate.getDate() - 1);
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+        } else if (event.key === 'ArrowRight') {
+            const selectedDate = new Date(datePicker.value);
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+        } else if (event.key === 'ArrowUp') {
+            const selectedIndex = optionsSelect.selectedIndex;
+            if (selectedIndex === optionsSelect.options.length - 1) {
+                optionsSelect.selectedIndex = 0;
+            } else {
+                optionsSelect.selectedIndex = selectedIndex + 1;
+            }
+        } else if (event.key === 'ArrowDown') {
+            const selectedIndex = optionsSelect.selectedIndex;
+            if (selectedIndex === 0) {
+                optionsSelect.selectedIndex = optionsSelect.options.length - 1;
+            } else {
+                optionsSelect.selectedIndex = selectedIndex - 1;
+            }
+        }
+      });
+  });
