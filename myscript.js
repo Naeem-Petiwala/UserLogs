@@ -66,7 +66,8 @@ function logsDownload(deviceType, linkType) {
             } else if (param5Value === "local5.0") {
 
                 dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-
+                window.open(dynamicUrl, "_blank");
+                return
             }
         }
     } else if (deviceType === "Android") {
@@ -75,9 +76,9 @@ function logsDownload(deviceType, linkType) {
             if (linkType === "Live") {
 
                 if (param1Value === "sunem1") {
-    
+
                     dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
-    
+
                 } else {
                     dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
                 }
@@ -91,6 +92,9 @@ function logsDownload(deviceType, linkType) {
 
                 dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
 
+                window.open(dynamicUrl, "_blank");
+                return
+
             }
         }
     } else if (deviceType === "API") {
@@ -101,18 +105,61 @@ function logsDownload(deviceType, linkType) {
         dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
     } else {
 
-        const iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`;
-        const androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`;
-        const apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+        let iOSUrl = ''
+        let androidUrl = ''
+        let apiUrl = ''
+        if (param1Value === "sunem1") {
+            iOSUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            androidUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+            apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
+        } else {
+            iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+            apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
+        }
 
-        window.open(iOSUrl, "_blank");
-        window.open(androidUrl, "_blank");
-        window.open(apiUrl, "_blank");
+        if (param1Value === "sunem1") {
+            window.open(iOSUrl, "_blank");
+            window.open(androidUrl, "_blank");
+            window.open(apiUrl, "_blank");
+        } else {
+            fetch(dynamicUrl).then(response => {
+                if (!response.ok) {
+                    showAlert(`Logs for ${param3Value}_${param1Value}_${param2Value} not found`);
+                } else {
+                    window.open(iOSUrl, "_blank");
+                    window.open(androidUrl, "_blank");
+                    window.open(apiUrl, "_blank");
+                }
+            });
+        }
         return;
     }
 
-    window.open(dynamicUrl, "_blank");
+    if (param1Value === "sunem1") {
+        window.open(dynamicUrl, "_blank");
+    } else {
+        fetch(dynamicUrl).then(response => {
+            if (!response.ok) {
+                showAlert(`Logs for ${param3Value}_${param1Value}_${param2Value} not found`);
+            } else {
+                window.open(dynamicUrl, "_blank");
+            }
+        });
+    }
 
+
+}
+
+function showAlert(message) {
+    var alertBox = document.getElementById('alert');
+    alertBox.textContent = message;
+    alertBox.style.display = 'block';
+
+    // Hide the alert after 3 seconds (3000 milliseconds)
+    setTimeout(function () {
+        alertBox.style.display = 'none';
+    }, 3000);
 }
 
 // Func to Formate Live/Local Logs Date
@@ -280,8 +327,8 @@ updateMainDropdown(LiveArray); // After Refresh
 updateDropdown(LocalLinks); // After Refresh
 hideLocalBtn(); // After Refresh
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('keydown', function(event) {
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('keydown', function (event) {
         // Check if the pressed key is an arrow key
         if (event.key === 'ArrowLeft') {
             const selectedDate = new Date(datePicker.value);
@@ -306,5 +353,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 optionsSelect.selectedIndex = selectedIndex - 1;
             }
         }
-      });
-  });
+    });
+});
