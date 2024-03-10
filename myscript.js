@@ -256,7 +256,9 @@ var LiveArray = [
     { value: 'cadvet', text: 'VETNOVA' },
     { value: 'mega', text: 'MEGACARE' },
     { value: 'sunem1', text: 'SUNRD' },
-    { value: 'cpc', text: 'CPC DIAGNOSTIC' }
+    { value: 'cpc', text: 'CPC DIAGNOSTIC' },
+    { value: 'enbcl', text: 'EMERCHEMIE' },
+    { value: 'zintl', text: 'ZINTL' }
 ];
 
 var LocalArray = [
