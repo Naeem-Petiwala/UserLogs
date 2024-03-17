@@ -240,7 +240,7 @@ var LiveArray = [
     { value: 'jbcpl', text: 'JBCPL' },
     { value: 'chc', text: 'SUN CHC' },
     { value: 'danone', text: 'DANONE' },
-    { value: 'glmrk', text: 'GLEM' },
+    { value: 'gmem', text: 'GLEM' },
     { value: 'biotics', text: 'BIOTICS' },
     { value: 'inzpera', text: 'INZPERA HEALTH' },
     { value: 'ajanta', text: 'AJANTA PHARMA' },
