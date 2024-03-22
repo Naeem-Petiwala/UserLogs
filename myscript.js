@@ -31,8 +31,9 @@ document.getElementById("UPWLogs").addEventListener("click", function () {
 });
 // Next Page
 document.getElementById("ImpBtn").addEventListener("click", function () {
-    dynamicUrl = `importantLinks.html`
-    window.location.href = dynamicUrl;
+    alert("Coming Soon");
+    // dynamicUrl = `importantLinks.html`
+    // window.location.href = dynamicUrl;
     // window.open(dynamicUrl, "_blank");
 });
 
@@ -47,7 +48,14 @@ function logsDownload(deviceType, linkType) {
 
         if (linkType === "Live") {
 
-            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            if (param1Value === "sunem1") {
+
+                dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+
+            } else {
+
+                dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            }
 
         } else {
 
@@ -58,15 +66,23 @@ function logsDownload(deviceType, linkType) {
             } else if (param5Value === "local5.0") {
 
                 dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-
+                window.open(dynamicUrl, "_blank");
+                return
             }
         }
     } else if (deviceType === "Android") {
 
         if (linkType === "Live") {
+            if (linkType === "Live") {
 
-            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                if (param1Value === "sunem1") {
 
+                    dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+                } else {
+                    dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                }
+            }
         } else {
             if (param5Value === "storageGP") {
 
@@ -75,6 +91,9 @@ function logsDownload(deviceType, linkType) {
             } else if (param5Value === "local5.0") {
 
                 dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+
+                window.open(dynamicUrl, "_blank");
+                return
 
             }
         }
@@ -86,18 +105,61 @@ function logsDownload(deviceType, linkType) {
         dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
     } else {
 
-        const iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`;
-        const androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`;
-        const apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+        let iOSUrl = ''
+        let androidUrl = ''
+        let apiUrl = ''
+        if (param1Value === "sunem1") {
+            iOSUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            androidUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+            apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
+        } else {
+            iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+            androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+            apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
+        }
 
-        window.open(iOSUrl, "_blank");
-        window.open(androidUrl, "_blank");
-        window.open(apiUrl, "_blank");
+        if (param1Value === "sunem1") {
+            window.open(iOSUrl, "_blank");
+            window.open(androidUrl, "_blank");
+            window.open(apiUrl, "_blank");
+        } else {
+            fetch(dynamicUrl).then(response => {
+                if (!response.ok) {
+                    showAlert(`Logs for ${param3Value}_${param1Value}_${param2Value} not found`);
+                } else {
+                    window.open(iOSUrl, "_blank");
+                    window.open(androidUrl, "_blank");
+                    window.open(apiUrl, "_blank");
+                }
+            });
+        }
         return;
     }
 
-    window.open(dynamicUrl, "_blank");
+    if (param1Value === "sunem1") {
+        window.open(dynamicUrl, "_blank");
+    } else {
+        fetch(dynamicUrl).then(response => {
+            if (!response.ok) {
+                showAlert(`Logs for ${param3Value}_${param1Value}_${param2Value} not found`);
+            } else {
+                window.open(dynamicUrl, "_blank");
+            }
+        });
+    }
 
+
+}
+
+function showAlert(message) {
+    var alertBox = document.getElementById('alert');
+    alertBox.textContent = message;
+    alertBox.style.display = 'block';
+
+    // Hide the alert after 3 seconds (3000 milliseconds)
+    setTimeout(function () {
+        alertBox.style.display = 'none';
+    }, 3000);
 }
 
 // Func to Formate Live/Local Logs Date
@@ -178,7 +240,7 @@ var LiveArray = [
     { value: 'jbcpl', text: 'JBCPL' },
     { value: 'chc', text: 'SUN CHC' },
     { value: 'danone', text: 'DANONE' },
-    { value: 'glmrk', text: 'GLEM' },
+    { value: 'gmem', text: 'GLEM' },
     { value: 'biotics', text: 'BIOTICS' },
     { value: 'inzpera', text: 'INZPERA HEALTH' },
     { value: 'ajanta', text: 'AJANTA PHARMA' },
@@ -188,12 +250,15 @@ var LiveArray = [
     { value: 'metr', text: 'METROPOLIS' },
     { value: 'sdpl', text: 'SOFTDEAL PRIVATE' },
     { value: 'cipi', text: 'CIPLA INTERNATIONAL' },
-    { value: 'mega', text: 'MEGA' },
     { value: 'bayer', text: 'BAYER' },
     { value: 'higen', text: 'HIGEN' },
     { value: 'thyrocare', text: 'THYROCARE' },
     { value: 'cadvet', text: 'VETNOVA' },
-    { value: 'aurogen', text: 'AURO INDONESIA' }
+    { value: 'mega', text: 'MEGACARE' },
+    { value: 'sunem1', text: 'SUNRD' },
+    { value: 'cpc', text: 'CPC DIAGNOSTIC' },
+    { value: 'enbcl', text: 'EMERCHEMIE' },
+    { value: 'zintl', text: 'ZINTL' }
 ];
 
 var LocalArray = [
@@ -263,3 +328,32 @@ function updateDropdown(options) {
 updateMainDropdown(LiveArray); // After Refresh
 updateDropdown(LocalLinks); // After Refresh
 hideLocalBtn(); // After Refresh
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('keydown', function (event) {
+        // Check if the pressed key is an arrow key
+        if (event.key === 'ArrowLeft') {
+            const selectedDate = new Date(datePicker.value);
+            selectedDate.setDate(selectedDate.getDate() - 1);
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+        } else if (event.key === 'ArrowRight') {
+            const selectedDate = new Date(datePicker.value);
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+        } else if (event.key === 'ArrowUp') {
+            const selectedIndex = optionsSelect.selectedIndex;
+            if (selectedIndex === optionsSelect.options.length - 1) {
+                optionsSelect.selectedIndex = 0;
+            } else {
+                optionsSelect.selectedIndex = selectedIndex + 1;
+            }
+        } else if (event.key === 'ArrowDown') {
+            const selectedIndex = optionsSelect.selectedIndex;
+            if (selectedIndex === 0) {
+                optionsSelect.selectedIndex = optionsSelect.options.length - 1;
+            } else {
+                optionsSelect.selectedIndex = selectedIndex - 1;
+            }
+        }
+    });
+});
