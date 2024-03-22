@@ -192,7 +192,8 @@ var LiveArray = [
     { value: 'bayer', text: 'BAYER' },
     { value: 'higen', text: 'HIGEN' },
     { value: 'thyrocare', text: 'THYROCARE' },
-    { value: 'cadvet', text: 'VETNOVA' }
+    { value: 'cadvet', text: 'VETNOVA' },
+    { value: 'aurogen', text: 'AURO INDONESIA' }
 ];
 
 var LocalArray = [
