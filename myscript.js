@@ -258,7 +258,8 @@ var LiveArray = [
     { value: 'sunem1', text: 'SUNRD' },
     { value: 'cpc', text: 'CPC DIAGNOSTIC' },
     { value: 'enbcl', text: 'EMERCHEMIE' },
-    { value: 'zintl', text: 'ZINTL' }
+    { value: 'zintl', text: 'ZINTL' },
+    { value: 'aurogen', text: 'AURO INDONESIA' }
 ];
 
 var LocalArray = [
