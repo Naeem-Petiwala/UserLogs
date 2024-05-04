@@ -21,6 +21,10 @@ document.getElementById("AndroidLocal").addEventListener("click", function () {
 document.getElementById("APILogs").addEventListener("click", function () {
     logsDownload("API", "Live");
 });
+// APILocal
+document.getElementById("APILocal").addEventListener("click", function () {
+    logsDownload("API", "Local");
+});
 // All Logs
 document.getElementById("AllLogs").addEventListener("click", function () {
     logsDownload("AllLogs", "Live");
@@ -29,13 +33,17 @@ document.getElementById("AllLogs").addEventListener("click", function () {
 document.getElementById("UPWLogs").addEventListener("click", function () {
     logsDownload("UPW", "Live");
 });
-// Next Page
-document.getElementById("ImpBtn").addEventListener("click", function () {
-    alert("Coming Soon");
-    // dynamicUrl = `importantLinks.html`
-    // window.location.href = dynamicUrl;
-    // window.open(dynamicUrl, "_blank");
+// UPW Local Logs
+document.getElementById("UPWLocal").addEventListener("click", function () {
+    logsDownload("UPW", "Local");
 });
+// Next Page
+// document.getElementById("ImpBtn").addEventListener("click", function () {
+//     alert("Coming Soon");
+//     // dynamicUrl = `importantLinks.html`
+//     // window.location.href = dynamicUrl;
+//     // window.open(dynamicUrl, "_blank");
+// });
 
 function logsDownload(deviceType, linkType) {
     const param1Value = encodeURIComponent(document.getElementById("param1").value);
@@ -100,9 +108,16 @@ function logsDownload(deviceType, linkType) {
     } else if (deviceType === "API") {
         if (linkType === "Live") {
             dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+        } else {
+            dynamicUrl = `https://storagegpworker.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
         }
     } else if (deviceType === "UPW") {
-        dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
+        if (linkType === "Live") {
+            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
+
+        } else {
+            dynamicUrl = `https://storagegpworker.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
+        }
     } else {
 
         let iOSUrl = ''
@@ -228,11 +243,11 @@ var dropdownContainer = document.getElementById('dropdownContainer');
 
 var LiveArray = [
     { value: 'sun', text: 'SUN PHARMA' },
+    { value: 'glenmark', text: 'GLENMARK' },
     { value: 'usv', text: 'USV' },
     { value: 'sunem2', text: 'SUN EMERGING' },
     { value: 'hul', text: 'HUL' },
     { value: 'cipla', text: 'CIPLA' },
-    { value: 'glenmark', text: 'GLENMARK' },
     { value: 'cadila', text: 'CADILA' },
     { value: 'apl', text: 'AUROBINDO' },
     { value: 'drl', text: 'DR. REDDY' },
@@ -259,6 +274,7 @@ var LiveArray = [
     { value: 'cpc', text: 'CPC DIAGNOSTIC' },
     { value: 'enbcl', text: 'EMERCHEMIE' },
     { value: 'zintl', text: 'ZINTL' },
+    { value: 'zydi', text: 'ZYDUS' },
     { value: 'aurogen', text: 'AURO INDONESIA' }
 ];
 
@@ -266,7 +282,9 @@ var LocalArray = [
     { value: 'gmlo', text: 'GMLO' },
     { value: 'cipq', text: 'CIPQ' },
     { value: 'almcp2', text: 'ALEMBIC LOCAL' },
-    { value: 'gluat', text: 'GLUAT' }
+    { value: 'gluat', text: 'GLUAT' },
+    { value: 'chcdev', text: 'CHCDEV' },
+    { value: 'chc1', text: 'CHC1' }
 ];
 
 // Method to fill Main Dropdown
@@ -283,6 +301,8 @@ function hideLiveBtn() {
     iOSLogs.classList.add('hidden')
     AndroidLogs.classList.add('hidden')
     APILogs.classList.add('hidden')
+    APILocal.classList.remove('hidden')
+    UPWLocal.classList.remove('hidden')
     AllLogs.classList.add('hidden')
     iOSLocal.classList.remove('hidden')
     AndroidLocal.classList.remove('hidden')
@@ -293,6 +313,8 @@ function hideLocalBtn() {
     iOSLogs.classList.remove('hidden')
     AndroidLogs.classList.remove('hidden')
     APILogs.classList.remove('hidden')
+    APILocal.classList.add('hidden')
+    UPWLocal.classList.add('hidden')
     AllLogs.classList.remove('hidden')
     iOSLocal.classList.add('hidden')
     AndroidLocal.classList.add('hidden')
