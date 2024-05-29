@@ -284,7 +284,10 @@ var LocalArray = [
     { value: 'almcp2', text: 'ALEMBIC LOCAL' },
     { value: 'gluat', text: 'GLUAT' },
     { value: 'chcdev', text: 'CHCDEV' },
-    { value: 'chc1', text: 'CHC1' }
+    { value: 'chc1', text: 'CHC1' },
+    { value: 'ciplauat', text: 'CIPLAUAT' },
+    { value: 'jbcpl', text: 'JBCPL' },
+    { value: 'ajdev', text: 'AJDEV' }
 ];
 
 // Method to fill Main Dropdown
