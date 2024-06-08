@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPORTANT LINKS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <button class="navbar-button" id="backButton">Back</button>
+        <div class="navbar-title">IMPORTANT LINKS</div>
+        <div id="searchContainer">
+            <input type="text" id="searchBar" placeholder="Search...">
+            <button id="clearButton">Clear</button>
+        </div>
+    </nav>
+    <div id="container">
+        <div class="row">
+            <div class="sub-heading" tabindex="0" onclick="toggleRow(this)">IMPORTANT LINKS</div>
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>RELEASE NOTES (iOS)</td>
+                        <td><button class="table-button linkToOpen" data-value="releaseNotes">OPEN LINK</button></td>
+                        <td>iOS RELEASE NOTE</td>
+                    </tr>
+                    <tr>
+                        <td>DAILY TASK LIST (iOS)</td>
+                        <td><button class="table-button linkToOpen" data-value="dailyTask">OPEN LINK</button></td>
+                        <td>iOS DAILY TASK SHEET</td>
+                    </tr>
+                    <tr>
+                        <td>AZURE DEVSOPS</td>
+                        <td><button class="table-button linkToOpen" data-value="azureDev">OPEN LINK</button></td>
+                        <td>AZURE DEVSOPS</td>
+                    </tr>
+                    <tr>
+                        <td>NEW APP DESIGN</td>
+                        <td><button class="table-button linkToOpen" data-value="newApp">OPEN LINK</button></td>
+                        <td>CP3 UI</td>
+                    </tr>
+                    <tr>
+                        <td>TEST USERS</td>
+                        <td><button class="table-button linkToOpen" data-value="testUsers">OPEN LINK</button></td>
+                        <td>LOCAL OR LIVE TEST USERS</td>
+                    </tr>
+                    <tr>
+                        <td>USER'S DataBase DRIVE (iOS)</td>
+                        <td><button class="table-button linkToOpen" data-value="userDB">OPEN LINK</button></td>
+                        <td>USER'S DB (iOS ONLY)</td>
+                    </tr>
+                    <tr>
+                        <td>PHYZII DATABASE</td>
+                        <td><button class="table-button linkToOpen" data-value="phyziiDatabase">OPEN LINK</button></td>
+                        <td>IMPORTANT FLAGS</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sub-heading" tabindex="0" onclick="toggleRow(this)">USER RESET</div>
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>GMLO & CHC (LOCAL)</td>
+                        <td><button class="table-button linkToOpen" data-value="localReset">OPEN LINK</button></td>
+                        <td>GMLO / Admin / Admin</td>
+                    </tr>
+                    <tr>
+                        <td>CHC (LIVE)</td>
+                        <td><button class="table-button linkToOpen" data-value="liveReset">OPEN LINK</button></td>
+                        <td>CHC / admin / Phyzii@2023</td>
+                    </tr>
+                    <tr>
+                        <td>SUN PHARMA (LIVE)</td>
+                        <td><button class="table-button linkToOpen" data-value="liveReset">OPEN LINK</button></td>
+                        <td>SUN / admin / Goregaon@2015</td>
+                    </tr>
+                    <tr>
+                        <td>GLENMARK (LIVE)</td>
+                        <td><button class="table-button linkToOpen" data-value="liveReset">OPEN LINK</button></td>
+                        <td>GLENMARK / samad.ansari@cirrius.com / aaaa</td>
+                    </tr>
+                    <tr>
+                        <td>SUNUAT (LOCAL)</td>
+                        <td><button class="table-button linkToOpen" data-value="uatReset">OPEN LINK</button></td>
+                        <td>SUNUAT / AdminD / aaaa</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sub-heading" tabindex="0" onclick="toggleRow(this)">LINKS FOR COPYING</div>
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>iOS LIVE LOGS</td>
+                        <td><button class="table-button copyButton" data-value="LiveLogs">COPY LINK</button></td>
+                        <td>For android add android/</td>
+                    </tr>
+                    <tr>
+                        <td>LIVE API LOGS</td>
+                        <td><button class="table-button copyButton" data-value="liveAPILogs">COPY LINK</button></td>
+                        <td>API logs for both</td>
+                    </tr>
+                    <tr>
+                        <td>LIVE UPW LOGS</td>
+                        <td><button class="table-button copyButton" data-value="liveUPWLogs">COPY LINK</button></td>
+                        <td>UPW logs for both</td>
+                    </tr>
+                    <tr>
+                        <td>SUNRD LIVE LOGS</td>
+                        <td><button class="table-button copyButton" data-value="liveSUNRDLogs">COPY LINK</button></td>
+                        <td>For android add android/</td>
+                    </tr>
+                    <tr>
+                        <td>iOS UAT LOGS</td>
+                        <td><button class="table-button copyButton" data-value="uatLogs">COPY LINK</button></td>
+                        <td>For android add android/</td>
+                    </tr>
+                    <tr>
+                        <td>iOS Local 5.0 LOGS</td>
+                        <td><button class="table-button copyButton" data-value="localLogs">COPY LINK</button></td>
+                        <td>For android add android/</td>
+                    </tr>
+                    <tr>
+                        <td>Local API LOGS</td>
+                        <td><button class="table-button copyButton" data-value="localAPILogs">COPY LINK</button></td>
+                        <td>API logs for both</td>
+                    </tr>
+                    <tr>
+                        <td>Local UPW LOGS</td>
+                        <td><button class="table-button copyButton" data-value="localUPWLogs">COPY LINK</button></td>
+                        <td>UPW logs for both</td>
+                    </tr>
+                    <tr>
+                        <td>iPHONE/MOBILE LIVE URL</td>
+                        <td><button class="table-button copyButton" data-value="iPhonConfig">COPY LINK</button></td>
+                        <td>Config URL</td>
+                    </tr>
+                    <tr>
+                        <td>iPAD/TAB LIVE URL</td>
+                        <td><button class="table-button copyButton" data-value="iPadConfig">COPY LINK</button></td>
+                        <td>Config URL</td>
+                    </tr>
+                    <tr>
+                        <td>STORAGEGPWORKER URL</td>
+                        <td><button class="table-button copyButton" data-value="uatConfig">COPY LINK</button></td>
+                        <td>UAT Config URL</td>
+                    </tr>
+                    <tr>
+                        <td>LOCAL 5.0 URL</td>
+                        <td><button class="table-button copyButton" data-value="localConfig">COPY LINK</button></td>
+                        <td>Local 5.0 Config URL</td>
+                    </tr>
+                    <tr>
+                        <td>AJDEV URL</td>
+                        <td><button class="table-button copyButton" data-value="ajdevConfig">COPY LINK</button></td>
+                        <td>Config URL</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sub-heading" tabindex="0" onclick="toggleRow(this)">TOOLS</div>
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>CRASHLYTICS</td>
+                        <td><button class="table-button linkToOpen" data-value="crashlytics">OPEN LINK</button></td>
+                        <td>App crash report</td>
+                    </tr>
+                    <tr>
+                        <td>POSTMAN</td>
+                        <td><button class="table-button linkToOpen" data-value="postman">OPEN LINK</button></td>
+                        <td>API check</td>
+                    </tr>
+                    <tr>
+                        <td>TEXT TO LINK</td>
+                        <td><button class="table-button linkToOpen" data-value="textToLink">OPEN LINK</button></td>
+                        <td>Convert text to link</td>
+                    </tr>
+                    <tr>
+                        <td>CIRRIUS SHAREPOINT</td>
+                        <td><button class="table-button linkToOpen" data-value="sharepoint">OPEN LINK</button></td>
+                        <td>Cirrius sharepoint</td>
+                    </tr>
+                    <tr>
+                        <td>DEVGLAN</td>
+                        <td><button class="table-button linkToOpen" data-value="devglan">OPEN LINK</button></td>
+                        <td>Text encrypt decrypt</td>
+                    </tr>
+                    <tr>
+                        <td>JWT</td>
+                        <td><button class="table-button linkToOpen" data-value="jwt">OPEN LINK</button></td>
+                        <td>Token encode decode</td>
+                    </tr>
+                    <tr>
+                        <td>TEXT COMPARE</td>
+                        <td><button class="table-button linkToOpen" data-value="textCompare">OPEN LINK</button></td>
+                        <td>compare text</td>
+                    </tr>
+                    <tr>
+                        <td>JSON VIEWER</td>
+                        <td><button class="table-button linkToOpen" data-value="jsonViewer">OPEN LINK</button></td>
+                        <td>Format json</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="footer">Made by Naeem</div>
+    <script src="myScripts.js"></script>
+</body>
+
+</html>

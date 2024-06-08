@@ -38,12 +38,11 @@ document.getElementById("UPWLocal").addEventListener("click", function () {
     logsDownload("UPW", "Local");
 });
 // Next Page
-// document.getElementById("ImpBtn").addEventListener("click", function () {
-//     alert("Coming Soon");
-//     // dynamicUrl = `importantLinks.html`
-//     // window.location.href = dynamicUrl;
-//     // window.open(dynamicUrl, "_blank");
-// });
+document.getElementById("ImpBtn").addEventListener("click", function () {
+    // alert("Coming Soon");
+    dynamicUrl = `../Important Links/importantLinks.html`
+    window.open(dynamicUrl, "_blank");
+});
 
 function logsDownload(deviceType, linkType) {
     const param1Value = encodeURIComponent(document.getElementById("param1").value);
