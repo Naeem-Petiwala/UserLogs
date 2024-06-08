@@ -140,5 +140,5 @@ copyBtn.forEach(button => {
 
 // Back Button
 document.getElementById("backButton").addEventListener("click", function () {
-    window.location.href = '../Home Page/index.html';
+    window.location.href = '../index.html';
 });

@@ -40,7 +40,7 @@ document.getElementById("UPWLocal").addEventListener("click", function () {
 // Next Page
 document.getElementById("ImpBtn").addEventListener("click", function () {
     // alert("Coming Soon");
-    dynamicUrl = `../Important Links/importantLinks.html`
+    dynamicUrl = `Important Links/importantLinks.html`
     window.open(dynamicUrl, "_blank");
 });
 
