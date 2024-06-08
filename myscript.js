@@ -279,15 +279,17 @@ var LiveArray = [
 ];
 
 var LocalArray = [
+    { value: 'sunuat', text: 'SUNUAT' },
     { value: 'gmlo', text: 'GMLO' },
     { value: 'cipq', text: 'CIPQ' },
-    { value: 'almcp2', text: 'ALEMBIC LOCAL' },
     { value: 'gluat', text: 'GLUAT' },
     { value: 'chcdev', text: 'CHCDEV' },
     { value: 'chc1', text: 'CHC1' },
     { value: 'ciplauat', text: 'CIPLAUAT' },
     { value: 'jbcpl', text: 'JBCPL' },
-    { value: 'ajdev', text: 'AJDEV' }
+    { value: 'ajdev', text: 'AJDEV' },
+    { value: 'usv', text: 'USV LOCAL' },
+    { value: 'almcp2', text: 'ALEMBIC LOCAL' }
 ];
 
 // Method to fill Main Dropdown
