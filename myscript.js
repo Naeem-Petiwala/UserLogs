@@ -278,14 +278,14 @@ var LiveArray = [
 ];
 
 var LocalArray = [
-    { value: 'sunuat', text: 'SUNUAT' },
     { value: 'gmlo', text: 'GMLO' },
+    { value: 'sunuat', text: 'SUNUAT' },
     { value: 'cipq', text: 'CIPQ' },
     { value: 'gluat', text: 'GLUAT' },
     { value: 'chcdev', text: 'CHCDEV' },
     { value: 'chc1', text: 'CHC1' },
     { value: 'ciplauat', text: 'CIPLAUAT' },
-    { value: 'jbcpl', text: 'JBCPL' },
+    { value: 'jbcpl', text: 'JBCPL LOCAL' },
     { value: 'ajdev', text: 'AJDEV' },
     { value: 'usv', text: 'USV LOCAL' },
     { value: 'almcp2', text: 'ALEMBIC LOCAL' }
@@ -339,8 +339,8 @@ checkbox.addEventListener('change', function () {
 });
 
 var LocalLinks = [
-    { value: 'storageGP', text: 'STORAGE GP' },
-    { value: 'local5.0', text: 'LOCAL 5.0' }
+    { value: 'local5.0', text: 'LOCAL 5.0' },
+    { value: 'storageGP', text: 'STORAGE GP' }
 ];
 
 function updateDropdown(options) {

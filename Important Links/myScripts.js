@@ -85,7 +85,7 @@ const openLinksDict = {
     userDB: 'sample.com',
     phyziiDatabase: 'https://docs.google.com/spreadsheets/d/1P1nBlQpzFE6EExv28l7CW8G5bDFsaZqEKtchrd64QCI/edit?usp=sharing',
 
-    localReset: 'http://dev.cirrius.in',
+    localReset: 'http://dev.cirrius.in/phyziicrm/',
     uatReset: 'https://phyziiuat.cirrius.in',
     liveReset: 'https://phyzii.cirrius.in',
 
@@ -97,6 +97,8 @@ const openLinksDict = {
     jwt: 'https://jwt.io/',
     textCompare: 'https://text-compare.com/',
     jsonViewer: 'https://jsonviewer.stack.hu/',
+    zoho: 'https://accounts.zoho.com/signin?servicename=AaaServer&serviceurl=https%3A%2F%2Faccounts.zoho.com%2Fhome',
+    greythr: 'https://cirrius.greythr.com/uas/portal/auth/login?login_challenge=e489142aeff744a0a02fe198643a62b3',
 };
 
 linksToOpen.forEach(function (button) {
@@ -114,6 +116,7 @@ const copyLinkDict = {
     uatConfig: 'https://storagegpworker.blob.core.windows.net/clientid/cp2urls/cp2urlversion4_5_0.zip',
     localConfig: 'https://cirriusapilogscript.blob.core.windows.net/clientid/cp2urls/cp2urlversion4_5_0.zip',
     ajdevConfig: 'https://storagegpworker.blob.core.windows.net/clientid/cp2urls/cp2urlversion4_4_1.zip',
+    iOSText: 'itms-services://?action=download-manifest&amp;url=',
 
     LiveLogs: 'https://cirriusindiacentralstor.blob.core.windows.net/CLIENTID/images/txnsgp/devicelog/DD-MM-YYYY/REPCODE.txt',
     uatLogs: 'https://storagegpworker.blob.core.windows.net/CLIENTID/images/txnsgp/devicelog/DD-MM-YYYY/REPCODE.txt',
