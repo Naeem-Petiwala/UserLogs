@@ -274,7 +274,8 @@ var LiveArray = [
     { value: 'enbcl', text: 'EMERCHEMIE' },
     { value: 'zintl', text: 'ZINTL' },
     { value: 'zydi', text: 'ZYDUS' },
-    { value: 'aurogen', text: 'AURO INDONESIA' }
+    { value: 'aurogen', text: 'AURO INDONESIA' },
+    { value: 'vapt', text: 'VAPT' }
 ];
 
 var LocalArray = [
@@ -288,7 +289,12 @@ var LocalArray = [
     { value: 'jbcpl', text: 'JBCPL LOCAL' },
     { value: 'ajdev', text: 'AJDEV' },
     { value: 'usv', text: 'USV LOCAL' },
-    { value: 'almcp2', text: 'ALEMBIC LOCAL' }
+    { value: 'almcp2', text: 'ALEMBIC LOCAL' },
+    { value: 'sunemuat', text: 'SUNEMUAT' },
+    { value: 'bayer', text: 'BAYER LOCAL' },
+    { value: 'huluat', text: 'HULUAT' },
+    { value: 'sunrdev', text: 'SUNRDEV' },
+    { value: 'cp3', text: 'CP3' }
 ];
 
 // Method to fill Main Dropdown
