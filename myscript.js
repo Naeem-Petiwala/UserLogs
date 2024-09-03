@@ -275,7 +275,9 @@ var LiveArray = [
     { value: 'zintl', text: 'ZINTL' },
     { value: 'zydi', text: 'ZYDUS' },
     { value: 'aurogen', text: 'AURO INDONESIA' },
-    { value: 'vapt', text: 'VAPT' }
+    { value: 'vapt', text: 'VAPT' },
+    { value: 'hem', text: 'HEMAS' },
+    { value: 'eisai', text: 'EISAI' }
 ];
 
 var LocalArray = [
