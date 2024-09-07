@@ -277,7 +277,8 @@ var LiveArray = [
     { value: 'aurogen', text: 'AURO INDONESIA' },
     { value: 'vapt', text: 'VAPT' },
     { value: 'hem', text: 'HEMAS' },
-    { value: 'eisai', text: 'EISAI' }
+    { value: 'eisai', text: 'EISAI' },
+    { value: 'elanco', text: 'ELANCO' }
 ];
 
 var LocalArray = [
