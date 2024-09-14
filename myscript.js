@@ -50,6 +50,17 @@ function logsDownload(deviceType, linkType) {
     const param3Value = encodeURIComponent(document.getElementById("param3").value);
     const param4Value = formatDateForAPIURL(document.getElementById("param2").value);
     const param5Value = encodeURIComponent(document.getElementById("localDrop").value);
+
+    const liveURL       = "https://cirriusindiacentralstor.blob.core.windows.net"
+    const uatURL        = "https://storagegpworker.blob.core.windows.net"
+    const localURL      = "https://cirrdevstore.blob.core.windows.net"
+    const sunIntURL     = "https://blobstoragegm.blob.core.windows.net"
+    const connectURL    = "images/txnsgp/devicelog"
+    const apiUrl        = "apilogs"
+    const upwURL        = "UPW"
+    const androidURL    = "android"
+    const txtURL        = ".txt"
+
     let dynamicUrl = ""
     if (deviceType === "iOS") {
 
@@ -57,22 +68,23 @@ function logsDownload(deviceType, linkType) {
 
             if (param1Value === "sunem1" || param1Value === "sunem3") {
 
-                dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+                dynamicUrl = `${sunIntURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
 
             } else {
 
-                dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+                dynamicUrl = `${liveURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+
             }
 
         } else {
 
             if (param5Value === "storageGP") {
 
-                dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+                dynamicUrl = `${uatURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
 
             } else if (param5Value === "local5.0") {
 
-                dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
+                dynamicUrl = `${localURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
                 window.open(dynamicUrl, "_blank");
                 return
             }
@@ -84,20 +96,20 @@ function logsDownload(deviceType, linkType) {
 
                 if (param1Value === "sunem1" || param1Value === "sunem3") {
 
-                    dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                    dynamicUrl = `${sunIntURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
 
                 } else {
-                    dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                    dynamicUrl = `${liveURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
                 }
             }
         } else {
             if (param5Value === "storageGP") {
 
-                dynamicUrl = `https://storagegpworker.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                dynamicUrl = `${uatURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
 
             } else if (param5Value === "local5.0") {
 
-                dynamicUrl = `https://cirrdevstore.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
+                dynamicUrl = `${localURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
 
                 window.open(dynamicUrl, "_blank");
                 return
@@ -106,16 +118,16 @@ function logsDownload(deviceType, linkType) {
         }
     } else if (deviceType === "API") {
         if (linkType === "Live") {
-            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+            dynamicUrl = `${liveURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
         } else {
-            dynamicUrl = `https://storagegpworker.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`;
+            dynamicUrl = `${uatURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
         }
     } else if (deviceType === "UPW") {
         if (linkType === "Live") {
-            dynamicUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
+            dynamicUrl = `${liveURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
 
         } else {
-            dynamicUrl = `https://storagegpworker.blob.core.windows.net/apilogs/UPW/${param1Value.toUpperCase()}_${param4Value}_CommonLogs.txt`;
+            dynamicUrl = `${uatURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
         }
     } else {
 
@@ -123,13 +135,14 @@ function logsDownload(deviceType, linkType) {
         let androidUrl = ''
         let apiUrl = ''
         if (param1Value === "sunem1" || param1Value === "sunem3") {
-            iOSUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-            androidUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
-            apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
+            iOSUrl = `${sunIntURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+            androidUrl = `${sunIntURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
+
+            apiUrl = `${liveURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`
         } else {
-            iOSUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
-            androidUrl = `https://cirriusindiacentralstor.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
-            apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
+            iOSUrl = `${liveURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+            androidUrl = `${liveURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
+            apiUrl = `${liveURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`
         }
 
         if (param1Value === "sunem1" || param1Value === "sunem3") {
@@ -161,8 +174,6 @@ function logsDownload(deviceType, linkType) {
             }
         });
     }
-
-
 }
 
 function showAlert(message) {
