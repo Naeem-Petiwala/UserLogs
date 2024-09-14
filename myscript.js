@@ -55,7 +55,7 @@ function logsDownload(deviceType, linkType) {
 
         if (linkType === "Live") {
 
-            if (param1Value === "sunem1") {
+            if (param1Value === "sunem1" || param1Value === "sunem3") {
 
                 dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
 
@@ -82,7 +82,7 @@ function logsDownload(deviceType, linkType) {
         if (linkType === "Live") {
             if (linkType === "Live") {
 
-                if (param1Value === "sunem1") {
+                if (param1Value === "sunem1" || param1Value === "sunem3") {
 
                     dynamicUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
 
@@ -122,7 +122,7 @@ function logsDownload(deviceType, linkType) {
         let iOSUrl = ''
         let androidUrl = ''
         let apiUrl = ''
-        if (param1Value === "sunem1") {
+        if (param1Value === "sunem1" || param1Value === "sunem3") {
             iOSUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/${param2Value}/${param3Value}.txt`
             androidUrl = `https://blobstoragegm.blob.core.windows.net/${param1Value}/images/txnsgp/devicelog/android/${param2Value}/${param3Value}.txt`
             apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
@@ -132,7 +132,7 @@ function logsDownload(deviceType, linkType) {
             apiUrl = `https://cirriusindiacentralstor.blob.core.windows.net/apilogs/${param1Value.toUpperCase()}/${param3Value}_${param4Value}.txt`
         }
 
-        if (param1Value === "sunem1") {
+        if (param1Value === "sunem1" || param1Value === "sunem3") {
             window.open(iOSUrl, "_blank");
             window.open(androidUrl, "_blank");
             window.open(apiUrl, "_blank");
@@ -150,7 +150,7 @@ function logsDownload(deviceType, linkType) {
         return;
     }
 
-    if (param1Value === "sunem1") {
+    if (param1Value === "sunem1" || param1Value === "sunem3") {
         window.open(dynamicUrl, "_blank");
     } else {
         fetch(dynamicUrl).then(response => {
@@ -270,6 +270,7 @@ var LiveArray = [
     { value: 'cadvet', text: 'VETNOVA' },
     { value: 'mega', text: 'MEGACARE' },
     { value: 'sunem1', text: 'SUNRD' },
+    { value: 'sunem3', text: 'SUN RUSSIA OTC' },
     { value: 'cpc', text: 'CPC DIAGNOSTIC' },
     { value: 'enbcl', text: 'EMERCHEMIE' },
     { value: 'zintl', text: 'ZINTL' },
