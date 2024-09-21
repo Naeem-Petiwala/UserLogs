@@ -309,7 +309,8 @@ var LocalArray = [
     { value: 'bayer', text: 'BAYER LOCAL' },
     { value: 'huluat', text: 'HULUAT' },
     { value: 'sunrdev', text: 'SUNRDEV' },
-    { value: 'cp3', text: 'CP3' }
+    { value: 'cp3', text: 'CP3' },
+    { value: 'dcp3', text: 'DCP3' }
 ];
 
 // Method to fill Main Dropdown
