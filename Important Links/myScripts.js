@@ -88,6 +88,7 @@ const openLinksDict = {
     localReset: 'http://dev.cirrius.in/phyziicrm/',
     uatReset: 'https://phyziiuat.cirrius.in',
     liveReset: 'https://phyzii.cirrius.in',
+    sunem3Reset: 'https://phyzii.cirrius.co/',
 
     crashlytics: 'https://console.firebase.google.com/u/2/project/phyzii-e8407/overview',
     postman: 'https://web.postman.co/workspaces',

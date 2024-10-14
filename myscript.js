@@ -43,6 +43,19 @@ document.getElementById("ImpBtn").addEventListener("click", function () {
     dynamicUrl = `Important Links/importantLinks.html`
     window.open(dynamicUrl, "_blank");
 });
+// Reporting Object
+document.getElementById("REPOBJ").addEventListener("click",function() {
+    objectDownload();
+});
+
+function objectDownload() {
+    const clientID      = encodeURIComponent(document.getElementById("param1").value);
+    const filePath      = encodeURIComponent(document.getElementById("param3").value);
+    const baseURL       = "https://cirriusindiacentralstor.blob.core.windows.net/";
+    const appendURL     = "/ReportObj/Success/";
+    let dynamicUrl      = `${baseURL}${clientID}${appendURL}${filePath}`
+    window.open(dynamicUrl, "_blank");
+}
 
 function logsDownload(deviceType, linkType) {
     const param1Value = encodeURIComponent(document.getElementById("param1").value);
@@ -296,21 +309,22 @@ var LiveArray = [
 var LocalArray = [
     { value: 'gmlo', text: 'GMLO' },
     { value: 'sunuat', text: 'SUNUAT' },
+    { value: 'sunind', text: 'SUNDEV' },
     { value: 'cipq', text: 'CIPQ' },
-    { value: 'gluat', text: 'GLUAT' },
-    { value: 'chcdev', text: 'CHCDEV' },
-    { value: 'chc1', text: 'CHC1' },
-    { value: 'ciplauat', text: 'CIPLAUAT' },
     { value: 'jbcpl', text: 'JBCPL LOCAL' },
-    { value: 'ajdev', text: 'AJDEV' },
     { value: 'usv', text: 'USV LOCAL' },
-    { value: 'almcp2', text: 'ALEMBIC LOCAL' },
-    { value: 'sunemuat', text: 'SUNEMUAT' },
+    { value: 'chcdev', text: 'CHCDEV' },
     { value: 'bayer', text: 'BAYER LOCAL' },
+    { value: 'almcp2', text: 'ALEMBIC LOCAL' },
+    { value: 'gluat', text: 'GLUAT' },
     { value: 'huluat', text: 'HULUAT' },
+    { value: 'ciplauat', text: 'CIPLAUAT' },
+    { value: 'chc1', text: 'CHC1' },
+    { value: 'sunemuat', text: 'SUNEMUAT' },
     { value: 'sunrdev', text: 'SUNRDEV' },
+    { value: 'ajdev', text: 'AJDEV' },
     { value: 'cp3', text: 'CP3' },
-    { value: 'dcp3', text: 'DCP3' }
+    { value: 'dcp3', text: 'DCP3' },
 ];
 
 // Method to fill Main Dropdown
@@ -330,6 +344,7 @@ function hideLiveBtn() {
     APILocal.classList.remove('hidden')
     UPWLocal.classList.remove('hidden')
     AllLogs.classList.add('hidden')
+    REPOBJ.classList.add('hidden')
     iOSLocal.classList.remove('hidden')
     AndroidLocal.classList.remove('hidden')
     UPWLogs.classList.add('hidden')
@@ -345,6 +360,7 @@ function hideLocalBtn() {
     iOSLocal.classList.add('hidden')
     AndroidLocal.classList.add('hidden')
     UPWLogs.classList.remove('hidden')
+    REPOBJ.classList.remove('hidden')
 }
 
 // Checkbox state
@@ -389,14 +405,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const selectedDate = new Date(datePicker.value);
             selectedDate.setDate(selectedDate.getDate() + 1);
             datePicker.value = selectedDate.toISOString().split('T')[0];
-        } else if (event.key === 'ArrowUp') {
+        } else if (event.key === 'ArrowDown') {
             const selectedIndex = optionsSelect.selectedIndex;
             if (selectedIndex === optionsSelect.options.length - 1) {
                 optionsSelect.selectedIndex = 0;
             } else {
                 optionsSelect.selectedIndex = selectedIndex + 1;
             }
-        } else if (event.key === 'ArrowDown') {
+        } else if (event.key === 'ArrowUp') {
             const selectedIndex = optionsSelect.selectedIndex;
             if (selectedIndex === 0) {
                 optionsSelect.selectedIndex = optionsSelect.options.length - 1;
