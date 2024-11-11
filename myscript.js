@@ -326,6 +326,8 @@ var LocalArray = [
     { value: 'cp3', text: 'CP3' },
     { value: 'dcp3', text: 'DCP3' },
     { value: 'cad', text: 'CADILA LOCAL' },
+    { value: 'sunem3uat', text: 'SUNEM3UAT' },
+    { value: 'uldev', text: 'ULDEV' },
 ];
 
 // Method to fill Main Dropdown
