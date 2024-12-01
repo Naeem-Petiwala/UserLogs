@@ -308,6 +308,7 @@ var LiveArray = [
 
 var LocalArray = [
     { value: 'gmlo', text: 'GMLO' },
+    { value: 'suncp3', text: 'SUNCP3' },
     { value: 'sunuat', text: 'SUNUAT' },
     { value: 'sunind', text: 'SUNDEV' },
     { value: 'cipq', text: 'CIPQ' },
