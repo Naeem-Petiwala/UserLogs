@@ -328,7 +328,12 @@ var LocalArray = [
     { value: 'dcp3', text: 'DCP3' },
     { value: 'cad', text: 'CADILA LOCAL' },
     { value: 'sunem3uat', text: 'SUNEM3UAT' },
-    { value: 'uldev', text: 'ULDEV' },
+    { value: 'hulpre', text: 'HULPRE' },
+    { value: 'drlpre', text: 'DRLPRE' },
+    { value: 'uathul', text: 'UATHUL' },
+    { value: 'uatdrl', text: 'UATDRL' },
+    { value: 'ciplapre', text: 'CIPLAPRE' },
+    { value: 'uatcipla', text: 'UATCIPLA' },
 ];
 
 // Method to fill Main Dropdown
