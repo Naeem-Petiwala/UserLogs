@@ -66,6 +66,7 @@ function logsDownload(deviceType, linkType) {
 
     const liveURL       = "https://cirriusindiacentralstor.blob.core.windows.net"
     const uatURL        = "https://storagegpworker.blob.core.windows.net"
+    const preURL        = "https://storageaccountuat2.blob.core.windows.net"
     const localURL      = "https://cirrdevstore.blob.core.windows.net"
     const sunIntURL     = "https://blobstoragegm.blob.core.windows.net"
     const connectURL    = "images/txnsgp/devicelog"
@@ -100,6 +101,8 @@ function logsDownload(deviceType, linkType) {
                 dynamicUrl = `${localURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
                 window.open(dynamicUrl, "_blank");
                 return
+            } else if (param5Value == "preENV") {
+                dynamicUrl = `${preURL}/${param1Value}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
             }
         }
     } else if (deviceType === "Android") {
@@ -127,6 +130,8 @@ function logsDownload(deviceType, linkType) {
                 window.open(dynamicUrl, "_blank");
                 return
 
+            } else if (param5Value == "preENV") {
+                dynamicUrl = `${preURL}/${param1Value}/${connectURL}/${androidURL}/${param2Value}/${param3Value}${txtURL}`
             }
         }
     } else if (deviceType === "API") {
@@ -328,6 +333,7 @@ var LocalArray = [
     { value: 'dcp3', text: 'DCP3' },
     { value: 'cad', text: 'CADILA LOCAL' },
     { value: 'sunem3uat', text: 'SUNEM3UAT' },
+    { value: 'uldev', text: 'ULDEV' },
     { value: 'hulpre', text: 'HULPRE' },
     { value: 'drlpre', text: 'DRLPRE' },
     { value: 'uathul', text: 'UATHUL' },
@@ -387,7 +393,9 @@ checkbox.addEventListener('change', function () {
 
 var LocalLinks = [
     { value: 'local5.0', text: 'LOCAL 5.0' },
-    { value: 'storageGP', text: 'STORAGE GP' }
+    { value: 'storageGP', text: 'STORAGE GP' },
+    { value: 'preENV', text: 'PRE ENV' },
+    { value: 'qcENV', text: 'QC ENV' }
 ];
 
 function updateDropdown(options) {
