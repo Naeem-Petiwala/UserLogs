@@ -137,6 +137,8 @@ function logsDownload(deviceType, linkType) {
     } else if (deviceType === "API") {
         if (linkType === "Live") {
             dynamicUrl = `${liveURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
+        } else if (param5Value == "preENV") { 
+            dynamicUrl = `${preURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
         } else {
             dynamicUrl = `${uatURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
         }
@@ -144,6 +146,8 @@ function logsDownload(deviceType, linkType) {
         if (linkType === "Live") {
             dynamicUrl = `${liveURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
 
+        } else if (param5Value == "preENV") { 
+            dynamicUrl = `${preURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
         } else {
             dynamicUrl = `${uatURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
         }
