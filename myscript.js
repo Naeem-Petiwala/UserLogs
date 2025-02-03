@@ -312,12 +312,14 @@ var LiveArray = [
     { value: 'vapt', text: 'VAPT' },
     { value: 'hem', text: 'HEMAS' },
     { value: 'eisai', text: 'EISAI' },
-    { value: 'elanco', text: 'ELANCO' }
+    { value: 'elanco', text: 'ELANCO' },
+    { value: 'kenvue', text: 'KENVUE' },
 ];
 
 var LocalArray = [
-    { value: 'gmlo', text: 'GMLO' },
+    { value: 'hulpre', text: 'HULPRE' },
     { value: 'suncp3', text: 'SUNCP3' },
+    { value: 'gmlo', text: 'GMLO' },
     { value: 'sunuat', text: 'SUNUAT' },
     { value: 'sunind', text: 'SUNDEV' },
     { value: 'cipq', text: 'CIPQ' },
@@ -338,7 +340,6 @@ var LocalArray = [
     { value: 'cad', text: 'CADILA LOCAL' },
     { value: 'sunem3uat', text: 'SUNEM3UAT' },
     { value: 'uldev', text: 'ULDEV' },
-    { value: 'hulpre', text: 'HULPRE' },
     { value: 'drlpre', text: 'DRLPRE' },
     { value: 'uathul', text: 'UATHUL' },
     { value: 'uatdrl', text: 'UATDRL' },
