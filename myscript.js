@@ -343,7 +343,11 @@ var LocalArray = [
     { "value": "uathul", "text": "UATHUL (uathul)" },
     { "value": "uatdrl", "text": "UATDRL (uatdrl)" },
     { "value": "ciplapre", "text": "CIPLAPRE (ciplapre)" },
-    { "value": "uatcipla", "text": "UATCIPLA (uatcipla)" }
+    { "value": "uatcipla", "text": "UATCIPLA (uatcipla)" },
+    { "value": "uatjbcpl", "text": "UATJBCPL (uatjbcpl)" },
+    { "value": "jbcplpre", "text": "JBCPLPRE (jbcplpre)" },
+    { "value": "uatglmrk", "text": "UATGLMRK (uatglmrk)" },
+    { "value": "glmrkpre", "text": "GLMRKPRE (glmrkpre)" }
 ];
 
 // Method to fill Main Dropdown
