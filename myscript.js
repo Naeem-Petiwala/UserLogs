@@ -350,6 +350,8 @@ var LocalArray = [
     { "value": "glmrkpre", "text": "GLMRKPRE (glmrkpre)" },
     { "value": "ajantapre", "text": "AJANTAPRE (ajantapre)" },
     { "value": "uatajanta", "text": "UATAJANTA (uatajanta)" },
+    { "value": "uatdanone", "text": "UATDANONE (uatdanone)" },
+    { "value": "danonepre", "text": "DANONEPRE (danonepre)" },
 ];
 
 // Method to fill Main Dropdown
