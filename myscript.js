@@ -317,6 +317,7 @@ var LiveArray = [
 
 var LocalArray = [
     { "value": "hulpre", "text": "HULPRE (hulpre)" },
+    { "value": "hulcp3", "text": "HULCP3 (hulcp3)" },
     { "value": "suncp3", "text": "SUNCP3 (suncp3)" },
     { "value": "gmlo", "text": "GMLO (gmlo)" },
     { "value": "sunuat", "text": "SUNUAT (sunuat)" },
@@ -404,10 +405,9 @@ checkbox.addEventListener('change', function () {
 });
 
 var LocalLinks = [
-    { value: 'local5.0', text: 'LOCAL 5.0' },
-    { value: 'storageGP', text: 'STORAGE GP' },
     { value: 'preENV', text: 'PRE ENV' },
-    { value: 'qcENV', text: 'QC ENV' }
+    { value: 'local5.0', text: 'LOCAL 5.0' },
+    { value: 'storageGP', text: 'STORAGE GP / QC ENV' }
 ];
 
 function updateDropdown(options) {
