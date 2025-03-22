@@ -1,3 +1,34 @@
+const customClientBtn = document.getElementById('customClientBtn');
+const customClientInput = document.getElementById('customClientInput');
+const dropdownClientInput = document.getElementById('dropdownClientInput');
+const customClientField = document.getElementById('customClientField');
+
+// Add this function to handle the toggle
+function toggleCustomClient() {
+    const isCustomMode = customClientInput.classList.toggle('hidden');
+    dropdownClientInput.classList.toggle('hidden');
+    customClientBtn.classList.toggle('active');
+    
+    // Clear the custom input when switching back to dropdown
+    if (isCustomMode) {
+        customClientField.value = '';
+    }
+}
+
+// Add event listener for the custom client button
+customClientBtn.addEventListener('click', toggleCustomClient);
+
+// Add event listener for the custom input field
+customClientField.addEventListener('input', function(e) {
+    // Convert input to uppercase
+    this.value = this.value.toUpperCase();
+});
+
+// iOS Logs
+document.getElementById("iOSCP3Logs").addEventListener("click", function () {
+    logsDownload("iOSCP3", "Live");
+});
+
 // iOS Logs
 document.getElementById("iOSLogs").addEventListener("click", function () {
     logsDownload("iOS", "Live");
@@ -58,7 +89,15 @@ function objectDownload() {
 }
 
 function logsDownload(deviceType, linkType) {
-    const param1Value = encodeURIComponent(document.getElementById("param1").value);
+
+    // Get client ID from either custom input or dropdown based on which is visible
+    const param1Value1 = encodeURIComponent(
+        !customClientInput.classList.contains('hidden') 
+            ? customClientField.value 
+            : document.getElementById("param1").value
+    );
+    const param1Value = param1Value1.toLowerCase();
+    // const param1Value = encodeURIComponent(document.getElementById("param1").value);
     const param2Value = formatDateForURL(document.getElementById("param2").value);
     const param3Value = encodeURIComponent(document.getElementById("param3").value);
     const param4Value = formatDateForAPIURL(document.getElementById("param2").value);
@@ -74,9 +113,14 @@ function logsDownload(deviceType, linkType) {
     const upwURL        = "UPW"
     const androidURL    = "android"
     const txtURL        = ".txt"
+    const cp3           = "cp3"
 
+    // https://cirriusindiacentralstor.blob.core.windows.net/hulcp3/cp3/images/txnsgp/devicelog/19-03-2025/D0037.txt
     let dynamicUrl = ""
-    if (deviceType === "iOS") {
+    if (deviceType === "iOSCP3") {
+        dynamicUrl = `${liveURL}/${param1Value}/${cp3}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+        console.log(dynamicUrl);
+    } else if (deviceType === "iOS") {
 
         if (linkType === "Live") {
 
@@ -274,11 +318,12 @@ var localDropDown = document.getElementById('localDrop');
 var dropdownContainer = document.getElementById('dropdownContainer');
 
 var LiveArray = [
+    { "value": "hul", "text": "HUL (hul)" },
+    { "value": "hulcp3", "text": "HULCP3 (hulcp3)" },
     { "value": "sun", "text": "SUN PHARMA (sun)" },
     { "value": "glenmark", "text": "GLENMARK (glenmark)" },
     { "value": "usv", "text": "USV (usv)" },
     { "value": "sunem2", "text": "SUN EMERGING (sunem2)" },
-    { "value": "hul", "text": "HUL (hul)" },
     { "value": "cipla", "text": "CIPLA (cipla)" },
     { "value": "cadila", "text": "CADILA (cadila)" },
     { "value": "apl", "text": "AUROBINDO (apl)" },
@@ -390,24 +435,33 @@ function hideLocalBtn() {
     UPWLogs.classList.remove('hidden')
     REPOBJ.classList.remove('hidden')
 }
-
-// Checkbox state
+// Update the checkbox event listener to consider custom client input
 checkbox.addEventListener('change', function () {
     dropdownContainer.classList.toggle('hidden', checkbox.checked);
     if (checkbox.checked) {
-        updateMainDropdown(LiveArray); // When Checked
-        hideLocalBtn();
+        if (!customClientInput.classList.contains('hidden')) {
+            // Keep using custom input if it's active
+            hideLocalBtn();
+        } else {
+            updateMainDropdown(LiveArray);
+            hideLocalBtn();
+        }
     } else {
-        updateMainDropdown(LocalArray); // When Unchecked
-        updateDropdown(LocalLinks); // Local Link Option
-        hideLiveBtn();
+        if (!customClientInput.classList.contains('hidden')) {
+            // Keep using custom input if it's active
+            hideLiveBtn();
+        } else {
+            updateMainDropdown(LocalArray);
+            updateDropdown(LocalLinks);
+            hideLiveBtn();
+        }
     }
 });
 
 var LocalLinks = [
     { value: 'preENV', text: 'PRE ENV' },
     { value: 'local5.0', text: 'LOCAL 5.0' },
-    { value: 'storageGP', text: 'STORAGE GP / QC ENV' }
+    { value: 'storageGP', text: 'STORAGE GP / QC ENV' },
 ];
 
 function updateDropdown(options) {

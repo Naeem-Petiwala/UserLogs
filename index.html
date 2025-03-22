@@ -10,38 +10,51 @@
 <body>
     <h1>User Logs</h1>
     <form id="urlForm">
-        <label for="param1">CLIENT ID</label>
-        <div class="option-selector">
-            <select id="param1" name="param1"></select>
-            <div class="option-arrows">
-                <span id="downArrow">↑</span>
-                <span id="upArrow">↓</span>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="param1">CLIENT ID</label>
+                <div id="customClientInput" class="custom-input-container hidden">
+                    <input type="text" id="customClientField" placeholder="Enter Client ID" autocomplete="off">
+                </div>
+                <div id="dropdownClientInput" class="dropdown-container">
+                    <select id="param1" name="param1"></select>
+                    <div class="option-arrows">
+                        <span id="downArrow">↑</span>
+                        <span id="upArrow">↓</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="param2">DATE</label>
+                <div id="dateField">
+                    <input type="date" id="param2" name="param2">
+                    <span class="arrow-button" id="backArrow">←</span>
+                    <span class="arrow-button" id="forwardArrow">→</span>
+                </div>
             </div>
         </div>
-        <label for="param2">DATE</label>
-        <div id="dateField">
-            <input type="date" id="param2" name="param2"><br><br>
-            <span class="arrow-button" id="backArrow">←</span>
-            <span class="arrow-button" id="forwardArrow">→</span>
-        </div>
 
-        <label for="param3">REP CODE / FILE PATH</label>
-        <div id="RepField">
-            <input type="text" id="param3" name="param3" placeholder="Enter Rep Code / File Path" autocomplete="off"><br><br>
-            <div class="checkBoxDiv">
-                <div class="checkBoxContainer">
-                    <label for="myCheckbox">LIVE</label>
-                    <input type="checkbox" id="myCheckbox" checked autocomplete="off">
-                </div>
-                <div id="dropdownContainer" class="hidden">
-                    <select id="localDrop"></select>
+        <div class="form-group">
+            <label for="param3">REP CODE / FILE PATH</label>
+            <div id="RepField">
+                <input type="text" id="param3" name="param3" placeholder="Enter Rep Code / File Path" autocomplete="off">
+                <div class="checkBoxDiv">
+                    <div class="checkBoxContainer">
+                        <label for="myCheckbox">LIVE</label>
+                        <input type="checkbox" id="myCheckbox" checked autocomplete="off">
+                    </div>
+                    <div id="dropdownContainer" class="hidden">
+                        <select id="localDrop"></select>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="combBtn">
-            <button type="button" class="downloadBtn" id="iOSLogs">iOS Logs</button>
-            <button type="button" class="downloadBtn" id="AndroidLogs">Android Logs</button>
+            <button type="button" class="downloadBtn" id="iOSCP3Logs">iOS CP3 Logs</button>
+            <button type="button" class="downloadBtn" id="iOSLogs">iOS CP2 Logs</button>
+            <button type="button" class="downloadBtn" id="AndroidLogs">Android CP2 Logs</button>
             <button type="button" class="downloadBtn" id="APILogs">API Logs</button>
             <button type="button" class="downloadBtn" id="AllLogs">ALL Live Logs</button>
             <button type="button" class="downloadBtn" id="iOSLocal">iOS Local Logs</button>
@@ -51,11 +64,19 @@
             <button type="button" class="downloadBtn" id="UPWLocal">UPW Local</button>
             <button type="button" class="downloadBtn" id="REPOBJ">SUBMITDATA OBJECT</button>
             <button type="button" class="downloadBtn" id="ImpBtn">IMPORTANT LINKS</button>
+            <button type="button" id="customClientBtn" class="custom-client-btn">Custom Client ID</button>
         </div>
     </form>
-    <div class="name-container">
-        Made by Naeem
+    
+    <div class="bottom-container">
+        <div class="name-container">
+            Version 3.0
+        </div>
+        <div class="name-container">
+            Made by Naeem
+        </div>
     </div>
+    
     <div id="alert" class="alert"></div>
     <script src="myscript.js"></script>
 </body>
