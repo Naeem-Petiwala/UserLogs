@@ -8,7 +8,7 @@ function toggleCustomClient() {
     const isCustomMode = customClientInput.classList.toggle('hidden');
     dropdownClientInput.classList.toggle('hidden');
     customClientBtn.classList.toggle('active');
-    
+
     // Clear the custom input when switching back to dropdown
     if (isCustomMode) {
         customClientField.value = '';
@@ -24,9 +24,14 @@ customClientField.addEventListener('input', function(e) {
     this.value = this.value.toUpperCase();
 });
 
-// iOS Logs
+// iOS CP3 Logs
 document.getElementById("iOSCP3Logs").addEventListener("click", function () {
     logsDownload("iOSCP3", "Live");
+});
+
+// iOS CP3 Local Logs
+document.getElementById("iOSCP3LocalLogs").addEventListener("click", function () {
+    logsDownload("iOSCP3", "Local");
 });
 
 // iOS Logs
@@ -36,7 +41,7 @@ document.getElementById("iOSLogs").addEventListener("click", function () {
 
 // iOS Logs GLUAT ALMCP2
 document.getElementById("iOSLocal").addEventListener("click", function () {
-    logsDownload("iOS", "/Local");
+    logsDownload("iOS", "Local");
 });
 
 // Android Logs
@@ -75,50 +80,82 @@ document.getElementById("ImpBtn").addEventListener("click", function () {
     window.open(dynamicUrl, "_blank");
 });
 // Reporting Object
-document.getElementById("REPOBJ").addEventListener("click",function() {
+document.getElementById("REPOBJ").addEventListener("click", function () {
     objectDownload();
 });
 
 function objectDownload() {
     const clientID      = encodeURIComponent(document.getElementById("param1").value);
-    const filePath      = encodeURIComponent(document.getElementById("param3").value);
-    const baseURL       = "https://cirriusindiacentralstor.blob.core.windows.net/";
-    const appendURL     = "/ReportObj/Success/";
-    let dynamicUrl      = `${baseURL}${clientID}${appendURL}${filePath}`
+    const clientID = encodeURIComponent(document.getElementById("param1").value);
+    const filePath = encodeURIComponent(document.getElementById("param3").value);
+    const baseURL = "https://cirriusindiacentralstor.blob.core.windows.net/";
+    const appendURL = "/ReportObj/Success/";
+    let dynamicUrl = `${baseURL}${clientID}${appendURL}${filePath}`
     window.open(dynamicUrl, "_blank");
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("param3");
+    input.addEventListener("input", function() {
+        // Convert to uppercase and allow only letters and numbers
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("customClientField");
+    input.addEventListener("input", function() {
+        // Convert to uppercase and allow only letters and numbers
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+});
 
 function logsDownload(deviceType, linkType) {
 
     // Get client ID from either custom input or dropdown based on which is visible
     const param1Value1 = encodeURIComponent(
-        !customClientInput.classList.contains('hidden') 
-            ? customClientField.value 
+        !customClientInput.classList.contains('hidden')
+            ? customClientField.value
             : document.getElementById("param1").value
     );
     const param1Value = param1Value1.toLowerCase();
     // const param1Value = encodeURIComponent(document.getElementById("param1").value);
     const param2Value = formatDateForURL(document.getElementById("param2").value);
-    const param3Value = encodeURIComponent(document.getElementById("param3").value);
+    // const param3Value = encodeURIComponent(document.getElementById("param3").value);
+    const param3Value = encodeURIComponent(document.getElementById("param3").value.toUpperCase());
     const param4Value = formatDateForAPIURL(document.getElementById("param2").value);
     const param5Value = encodeURIComponent(document.getElementById("localDrop").value);
 
-    const liveURL       = "https://cirriusindiacentralstor.blob.core.windows.net"
-    const uatURL        = "https://storagegpworker.blob.core.windows.net"
-    const preURL        = "https://storageaccountuat2.blob.core.windows.net"
-    const localURL      = "https://cirrdevstore.blob.core.windows.net"
-    const sunIntURL     = "https://blobstoragegm.blob.core.windows.net"
-    const connectURL    = "images/txnsgp/devicelog"
-    const apiUrl        = "apilogs"
-    const upwURL        = "UPW"
-    const androidURL    = "android"
-    const txtURL        = ".txt"
-    const cp3           = "cp3"
+    const liveURL = "https://cirriusindiacentralstor.blob.core.windows.net"
+    const uatURL = "https://storagegpworker.blob.core.windows.net"
+    const preURL = "https://storageaccountuat2.blob.core.windows.net"
+    const localURL = "https://cirrdevstore.blob.core.windows.net"
+    const sunIntURL = "https://blobstoragegm.blob.core.windows.net"
+    const connectURL = "images/txnsgp/devicelog"
+    const apiUrl = "apilogs"
+    const upwURL = "UPW"
+    const androidURL = "android"
+    const txtURL = ".txt"
+    const cp3 = "cp3"
 
     // https://cirriusindiacentralstor.blob.core.windows.net/hulcp3/cp3/images/txnsgp/devicelog/19-03-2025/D0037.txt
     let dynamicUrl = ""
     if (deviceType === "iOSCP3") {
-        dynamicUrl = `${liveURL}/${param1Value}/${cp3}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+        if (linkType === "Live") {
+            dynamicUrl = `${liveURL}/${param1Value}/${cp3}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+        } else {
+            if (param5Value === "storageGP") {
+                dynamicUrl = `${uatURL}/${param1Value}/${cp3}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+            } else if (param5Value === "local5.0") {
+
+                dynamicUrl = `${localURL}/${param1Value}/${cp3}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+                window.open(dynamicUrl, "_blank");
+                return
+            } else if (param5Value == "preENV") {
+                dynamicUrl = `${preURL}/${param1Value}/${cp3}/${connectURL}/${param2Value}/${param3Value}${txtURL}`
+            }
+        }
+
         console.log(dynamicUrl);
     } else if (deviceType === "iOS") {
 
@@ -181,7 +218,7 @@ function logsDownload(deviceType, linkType) {
     } else if (deviceType === "API") {
         if (linkType === "Live") {
             dynamicUrl = `${liveURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
-        } else if (param5Value == "preENV") { 
+        } else if (param5Value == "preENV") {
             dynamicUrl = `${preURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
         } else {
             dynamicUrl = `${uatURL}/${apiUrl}/${param1Value.toUpperCase()}/${param3Value}_${param4Value}${txtURL}`;
@@ -190,7 +227,7 @@ function logsDownload(deviceType, linkType) {
         if (linkType === "Live") {
             dynamicUrl = `${liveURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
 
-        } else if (param5Value == "preENV") { 
+        } else if (param5Value == "preENV") {
             dynamicUrl = `${preURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
         } else {
             dynamicUrl = `${uatURL}/${apiUrl}/${upwURL}/${param1Value.toUpperCase()}_${param4Value}_CommonLogs${txtURL}`;
@@ -231,12 +268,15 @@ function logsDownload(deviceType, linkType) {
 
     if (param1Value === "sunem1" || param1Value === "sunem3") {
         window.open(dynamicUrl, "_blank");
+        console.log(dynamicUrl);
     } else {
         fetch(dynamicUrl).then(response => {
             if (!response.ok) {
                 showAlert(`Logs for ${param3Value}_${param1Value}_${param2Value} not found`);
+                console.log(dynamicUrl);
             } else {
                 window.open(dynamicUrl, "_blank");
+                console.log(dynamicUrl);
             }
         });
     }
@@ -421,6 +461,8 @@ function hideLiveBtn() {
     iOSLocal.classList.remove('hidden')
     AndroidLocal.classList.remove('hidden')
     UPWLogs.classList.add('hidden')
+    iOSCP3Logs.classList.add('hidden')
+    iOSCP3LocalLogs.classList.remove('hidden')
 }
 
 function hideLocalBtn() {
@@ -434,6 +476,8 @@ function hideLocalBtn() {
     AndroidLocal.classList.add('hidden')
     UPWLogs.classList.remove('hidden')
     REPOBJ.classList.remove('hidden')
+    iOSCP3Logs.classList.remove('hidden')
+    iOSCP3LocalLogs.classList.add('hidden')
 }
 // Update the checkbox event listener to consider custom client input
 checkbox.addEventListener('change', function () {
