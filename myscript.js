@@ -85,7 +85,6 @@ document.getElementById("REPOBJ").addEventListener("click", function () {
 });
 
 function objectDownload() {
-    const clientID      = encodeURIComponent(document.getElementById("param1").value);
     const clientID = encodeURIComponent(document.getElementById("param1").value);
     const filePath = encodeURIComponent(document.getElementById("param3").value);
     const baseURL = "https://cirriusindiacentralstor.blob.core.windows.net/";
