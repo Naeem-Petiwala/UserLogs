@@ -400,6 +400,8 @@ var LiveArray = [
 ];
 
 var LocalArray = [
+    { "value": "cp3dev", "text": "CP3DEV (cp3dev)" },
+    { "value": "uatcp3", "text": "UATCP3 (uatcp3)" },
     { "value": "hulpre", "text": "HULPRE (hulpre)" },
     { "value": "hulcp3", "text": "HULCP3 (hulcp3)" },
     { "value": "suncp3", "text": "SUNCP3 (suncp3)" },
