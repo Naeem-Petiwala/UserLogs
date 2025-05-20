@@ -93,13 +93,13 @@ function objectDownload() {
     window.open(dynamicUrl, "_blank");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const input = document.getElementById("param3");
-    input.addEventListener("input", function() {
-        // Convert to uppercase and allow only letters and numbers
-        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    });
-});
+// document.addEventListener("DOMContentLoaded", function () {
+//     const input = document.getElementById("param3");
+//     input.addEventListener("input", function() {
+//         // Convert to uppercase and allow only letters and numbers
+//         this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+//     });
+// });
 
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("customClientField");
