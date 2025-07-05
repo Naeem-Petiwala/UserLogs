@@ -357,6 +357,7 @@ var localDropDown = document.getElementById('localDrop');
 var dropdownContainer = document.getElementById('dropdownContainer');
 
 var LiveArray = [
+    { "value": "danone", "text": "DANONE (danone)" },
     { "value": "hul", "text": "HUL (hul)" },
     { "value": "hulcp3", "text": "HULCP3 (hulcp3)" },
     { "value": "sun", "text": "SUN PHARMA (sun)" },
@@ -370,7 +371,6 @@ var LiveArray = [
     { "value": "alcp2", "text": "ALEMBIC (alcp2)" },
     { "value": "jbcpl", "text": "JBCPL (jbcpl)" },
     { "value": "chc", "text": "SUN CHC (chc)" },
-    { "value": "danone", "text": "DANONE (danone)" },
     { "value": "gmem", "text": "GLEM (gmem)" },
     { "value": "biotics", "text": "BIOTICS (biotics)" },
     { "value": "inzpera", "text": "INZPERA HEALTH (inzpera)" },
@@ -396,7 +396,8 @@ var LiveArray = [
     { "value": "hem", "text": "HEMAS (hem)" },
     { "value": "eisai", "text": "EISAI (eisai)" },
     { "value": "elanco", "text": "ELANCO (elanco)" },
-    { "value": "kenvue", "text": "KENVUE (kenvue)" }
+    { "value": "kenvue", "text": "KENVUE (kenvue)" },
+    { "value": "medtech", "text": "MEDTECH (medtech)" }
 ];
 
 var LocalArray = [
