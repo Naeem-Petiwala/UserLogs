@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AES tool · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="aes.css">
+</head>
+<body data-page="aes">
+<script src="../../assets/js/site.js"></script>
+<main class="page main">
+  <div class="page-head">
+    <h1>AES encrypt and decrypt</h1>
+    <p>Enter a 16-character key, choose a mode, and paste or drop your text. Everything happens in your browser.</p>
+  </div>
+
+  <section class="card settings" aria-label="Settings">
+    <div class="keyblock">
+      <div class="row-head">
+        <div class="lead">
+          <label for="keyInput">Key</label>
+          <span class="saved" id="savedNote" hidden><span id="savedText">Saved on this device</span><button type="button" class="link" id="forgetBtn">Forget</button></span>
+        </div>
+        <span class="count" id="keyCount">0 of 16 characters</span>
+      </div>
+      <div class="keyrow">
+        <div class="keyfield">
+          <input type="password" id="keyInput" placeholder="Enter exactly 16 characters" autocomplete="off" spellcheck="false">
+          <button type="button" class="link" id="toggleKeyBtn" aria-pressed="false">Show</button>
+        </div>
+        <button type="button" class="btn btn-sm" id="saveKeyBtn" disabled title="Stored in this browser only. Clearing site data removes it.">Save key</button>
+      </div>
+      <div class="pips" id="pips" aria-hidden="true"></div>
+    </div>
+    <div class="modeblock">
+      <div class="row-head"><span class="label">Mode</span></div>
+      <div class="modeseg" role="radiogroup" aria-label="Mode">
+        <button type="button" id="modeDecrypt" role="radio" aria-checked="true" class="active">Decrypt</button>
+        <button type="button" id="modeEncrypt" role="radio" aria-checked="false">Encrypt</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="work">
+    <section class="card pane in">
+      <div class="row-head">
+        <label for="inputText" id="inputLabel">Encrypted text (Base64)</label>
+        <div class="tools">
+          <button type="button" class="link" id="chooseBtn">Choose file</button>
+          <input type="file" id="fileInput" accept=".txt,text/plain" hidden>
+        </div>
+      </div>
+      <div class="dropzone" id="dropzone">
+        <textarea id="inputText" spellcheck="false" placeholder="Paste text here, or drop a .txt file"></textarea>
+        <div class="drop-overlay" id="dropOverlay">Drop file to load it</div>
+      </div>
+      <div class="file-chip" id="fileChip"><span id="fileChipName"></span><button type="button" class="chip-clear" id="chipClearBtn" aria-label="Remove loaded file">✕</button></div>
+      <div class="act">
+        <button class="btn btn-run" id="runBtn"><span id="runLabel">Decrypt</span></button>
+        <button class="btn" id="clearBtn">Clear</button>
+        <span class="kbd-hint" id="kbdHint">Ctrl + Enter to run</span>
+      </div>
+    </section>
+
+    <section class="card pane out">
+      <div class="row-head">
+        <div><label for="outputText" id="outputLabel">Decrypted text</label><span class="success-check" id="successCheck" role="status">Done</span></div>
+        <div class="tools">
+          <button class="link" id="copyBtn" disabled>Copy</button>
+          <button class="link" id="downloadBtn" disabled>Download</button>
+        </div>
+      </div>
+      <div class="error" id="errorBox" role="alert"><span class="err-sym" aria-hidden="true">!</span><span id="errorMsg"></span></div>
+      <textarea id="outputText" readonly spellcheck="false" placeholder="The result will appear here"></textarea>
+    </section>
+  </div>
+</main>
+
+
+<div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const keyInput = $('keyInput'), toggleKeyBtn = $('toggleKeyBtn'), keyCount = $('keyCount'), pips = $('pips');
+  const saveKeyBtn = $('saveKeyBtn'), forgetBtn = $('forgetBtn'), savedNote = $('savedNote'), savedText = $('savedText');
+  const modeDecrypt = $('modeDecrypt'), modeEncrypt = $('modeEncrypt');
+  const dropzone = $('dropzone'), inputText = $('inputText'), inputLabel = $('inputLabel');
+  const outputText = $('outputText'), outputLabel = $('outputLabel');
+  const runBtn = $('runBtn'), runLabel = $('runLabel'), clearBtn = $('clearBtn');
+  const copyBtn = $('copyBtn'), downloadBtn = $('downloadBtn');
+  const errorBox = $('errorBox'), errorMsg = $('errorMsg'), toast = $('toast');
+  const fileChip = $('fileChip'), fileChipName = $('fileChipName'), chipClearBtn = $('chipClearBtn');
+  const successCheck = $('successCheck'), chooseBtn = $('chooseBtn'), fileInput = $('fileInput');
+
+  const STORE_KEY = 'aes-tool-key';
+  let mode = 'decrypt';
+  let droppedFileName = null;
+  let toastTimer;
+
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) $('kbdHint').textContent = '⌘ + Enter to run';
+
+  for (let i = 0; i < 16; i++) pips.appendChild(document.createElement('i'));
+
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => e.preventDefault());
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('visible'), 1600);
+  }
+
+  function getSaved() { try { return localStorage.getItem(STORE_KEY); } catch (e) { return null; } }
+  function setSaved(value) {
+    try {
+      if (value === null) localStorage.removeItem(STORE_KEY);
+      else localStorage.setItem(STORE_KEY, value);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function setMode(next) {
+    mode = next;
+    const dec = mode === 'decrypt';
+    modeDecrypt.classList.toggle('active', dec);
+    modeEncrypt.classList.toggle('active', !dec);
+    modeDecrypt.setAttribute('aria-checked', dec);
+    modeEncrypt.setAttribute('aria-checked', !dec);
+    runLabel.textContent = dec ? 'Decrypt' : 'Encrypt';
+    inputLabel.textContent = dec ? 'Encrypted text (Base64)' : 'Text to encrypt';
+    outputLabel.textContent = dec ? 'Decrypted text' : 'Encrypted text (Base64)';
+    hideError();
+  }
+  modeDecrypt.addEventListener('click', () => setMode('decrypt'));
+  modeEncrypt.addEventListener('click', () => setMode('encrypt'));
+
+  toggleKeyBtn.addEventListener('click', () => {
+    const showing = keyInput.type === 'text';
+    keyInput.type = showing ? 'password' : 'text';
+    toggleKeyBtn.textContent = showing ? 'Show' : 'Hide';
+    toggleKeyBtn.setAttribute('aria-pressed', !showing);
+  });
+
+  function updateSaveUI(len) {
+    const saved = getSaved();
+    const matches = saved !== null && saved === keyInput.value;
+    savedNote.hidden = saved === null;
+    savedText.textContent = matches ? 'Saved on this device' : 'Another key is saved on this device';
+    saveKeyBtn.disabled = len !== 16 || matches;
+    saveKeyBtn.textContent = matches ? 'Saved ✓' : 'Save key';
+  }
+
+  function updateKeyMeta() {
+    const len = new TextEncoder().encode(keyInput.value).length;
+    const filled = Math.min(len, 16);
+    [...pips.children].forEach((p, i) => p.classList.toggle('on', i < filled));
+    const state = len === 16 ? 'valid' : (len > 16 ? 'invalid' : '');
+    pips.className = 'pips ' + state;
+    keyCount.className = 'count ' + state;
+    keyCount.textContent = len === 16 ? '16 of 16 characters, ready'
+      : len > 16 ? len + ' of 16 characters, ' + (len - 16) + ' too many'
+      : len + ' of 16 characters';
+    updateSaveUI(len);
+  }
+  keyInput.addEventListener('input', () => { updateKeyMeta(); hideError(); });
+
+  saveKeyBtn.addEventListener('click', () => {
+    if (setSaved(keyInput.value)) showToast('Key saved in this browser');
+    else showToast('Couldn’t save: this browser is blocking site storage');
+    updateKeyMeta();
+  });
+  forgetBtn.addEventListener('click', () => {
+    setSaved(null);
+    showToast('Saved key removed');
+    updateKeyMeta();
+  });
+
+  const savedAtStart = getSaved();
+  if (savedAtStart) keyInput.value = savedAtStart;
+  updateKeyMeta();
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorBox.classList.add('visible');
+  }
+  function hideError() { errorBox.classList.remove('visible'); }
+
+  function flashSuccess() {
+    successCheck.classList.add('visible');
+    setTimeout(() => successCheck.classList.remove('visible'), 1500);
+  }
+
+  function setFileChip(name) {
+    droppedFileName = name;
+    fileChipName.textContent = name;
+    fileChip.style.display = 'inline-flex';
+  }
+  function clearFileChip() {
+    droppedFileName = null;
+    fileChip.style.display = 'none';
+  }
+  chipClearBtn.addEventListener('click', clearFileChip);
+
+  inputText.addEventListener('input', () => {
+    if (droppedFileName) clearFileChip();
+    hideError();
+  });
+
+  function loadFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      inputText.value = reader.result;
+      setFileChip(file.name);
+      hideError();
+    };
+    reader.onerror = () => showError('Couldn’t read that file.');
+    reader.readAsText(file);
+  }
+
+  let dragCounter = 0;
+  dropzone.addEventListener('dragenter', e => {
+    e.preventDefault();
+    dragCounter++;
+    dropzone.classList.add('dragover');
+  });
+  dropzone.addEventListener('dragover', e => e.preventDefault());
+  dropzone.addEventListener('dragleave', () => {
+    dragCounter = Math.max(0, dragCounter - 1);
+    if (dragCounter === 0) dropzone.classList.remove('dragover');
+  });
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dragCounter = 0;
+    dropzone.classList.remove('dragover');
+    loadFile(e.dataTransfer.files && e.dataTransfer.files[0]);
+  });
+  chooseBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    loadFile(fileInput.files && fileInput.files[0]);
+    fileInput.value = '';
+  });
+
+  function base64ToBytes(b64) {
+    const binary = atob(b64.trim());
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+  function bytesToBase64(bytes) {
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  function updateOutputButtons() {
+    const has = !!outputText.value;
+    copyBtn.disabled = !has;
+    downloadBtn.disabled = !has;
+  }
+
+  async function run() {
+    hideError();
+    outputText.value = '';
+    updateOutputButtons();
+
+    const keyBytes = new TextEncoder().encode(keyInput.value);
+    if (keyBytes.length !== 16) {
+      showError('The key must be exactly 16 characters (AES-128).');
+      keyInput.focus();
+      return;
+    }
+    if (!inputText.value) {
+      showError('Add some text to ' + mode + ' first.');
+      return;
+    }
+
+    if (!window.crypto || !window.crypto.subtle) {
+      showError('This browser doesn’t support the Web Crypto API. Try a different browser, or open this page over HTTPS or from a local server.');
+      return;
+    }
+
+    const iv = new Uint8Array(16);
+
+    try {
+      const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-CBC' }, false, ['encrypt', 'decrypt']);
+
+      if (mode === 'encrypt') {
+        const plainBytes = new TextEncoder().encode(inputText.value);
+        const cipherBuffer = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, plainBytes);
+        outputText.value = bytesToBase64(new Uint8Array(cipherBuffer));
+        flashSuccess();
+      } else {
+        let cipherBytes;
+        try {
+          cipherBytes = base64ToBytes(inputText.value);
+        } catch (e) {
+          showError('That doesn’t look like valid Base64, so it can’t be decrypted.');
+          return;
+        }
+        const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, cipherBytes);
+        try {
+          outputText.value = new TextDecoder('utf-8', { fatal: true }).decode(plainBuffer);
+          flashSuccess();
+        } catch (e) {
+          showError('Decrypted, but the result isn’t valid UTF-8 text. Check the key.');
+        }
+      }
+    } catch (err) {
+      showError(mode === 'encrypt'
+        ? 'Encryption failed: ' + err.message
+        : 'Couldn’t decrypt. Check the key, or this text may not match the expected format.');
+    } finally {
+      updateOutputButtons();
+    }
+  }
+
+  runBtn.addEventListener('click', run);
+  inputText.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') run();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    inputText.value = '';
+    outputText.value = '';
+    hideError();
+    clearFileChip();
+    updateOutputButtons();
+    inputText.focus();
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    if (!outputText.value) return;
+    try {
+      await navigator.clipboard.writeText(outputText.value);
+    } catch (e) {
+      outputText.removeAttribute('readonly');
+      outputText.select();
+      document.execCommand('copy');
+      outputText.setAttribute('readonly', 'true');
+    }
+    showToast('Copied to clipboard');
+  });
+
+  function getOutputFilename() {
+    if (droppedFileName) return droppedFileName;
+    return mode === 'encrypt' ? 'encrypted.txt' : 'decrypted.txt';
+  }
+
+  downloadBtn.addEventListener('click', () => {
+    if (!outputText.value) return;
+    const blob = new Blob([outputText.value], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = getOutputFilename();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Downloaded ' + getOutputFilename());
+  });
+})();
+</script>
+</body>
+</html>

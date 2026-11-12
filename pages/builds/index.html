@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Native Builds · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Colors come from the master theme (assets/css/theme.css). Only names this page uses are mapped here. */
+:root, [data-theme="dark"] {
+  --bg-surface:var(--surface); --bg-elevated:var(--raised); --bg-muted:var(--muted); --bg-secondary:#2d353f;
+  --border:var(--line); --border-input:var(--line-2); --primary-fg:var(--on-primary);
+  --accent-bg:#2f4048; --accent-fg:#f3f6f7; --destructive:var(--danger); --ring:var(--primary);
+}
+[data-theme="light"] { --bg-secondary:#eef2f3; --accent-bg:#cfe7eb; --accent-fg:#2a3e48; }
+:root {
+  --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'DM Mono',monospace;
+  --sidebar-w:252px; --header-h:52px; --bar-h:52px; --radius:10px; --radius-lg:14px;
+}
+html { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:15px; }
+body { min-height:100vh; display:flex; flex-direction:column; }
+
+/* ── HEADER ── */
+.nb-bar { display:flex; align-items:center; gap:12px; padding:0 20px; height:var(--bar-h); border-bottom:1px solid var(--border); background:var(--bg); position:sticky; top:var(--shell-h); z-index:40; flex-shrink:0; }
+.nb-title { font-family:var(--font-display); font-size:15px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; white-space:nowrap; }
+.header-search { margin-left:auto; display:flex; align-items:center; gap:8px; background:var(--bg-surface); border:1px solid var(--border-input); border-radius:var(--radius); padding:0 12px; height:34px; width:240px; max-width:100%; transition:border-color 0.2s; }
+.header-search:focus-within { border-color:var(--ring); }
+.header-search svg { color:var(--text-3); flex-shrink:0; }
+.header-search input { background:none; border:none; outline:none; color:var(--text); font-family:var(--font-body); font-size:13px; width:100%; }
+.header-search input::placeholder { color:var(--text-3); }
+.kbd { font-family:var(--font-mono); font-size:11px; color:var(--text-3); background:var(--bg-muted); border:1px solid var(--border); border-radius:4px; padding:1px 5px; flex-shrink:0; }
+.header-actions { display:flex; align-items:center; gap:8px; padding-left:12px; border-left:1px solid var(--border); }
+.header-time { font-family:var(--font-mono); font-size:12px; color:var(--text-3); white-space:nowrap; }
+.admin-btn { display:flex; align-items:center; gap:6px; padding:0 12px; height:30px; border-radius:8px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-2); font-size:12px; font-family:var(--font-body); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.admin-btn:hover { background:var(--bg-elevated); color:var(--text); border-color:var(--border-input); }
+.admin-btn svg { pointer-events:none; }
+
+/* ── LAYOUT ── */
+.layout { display:flex; flex:1; min-height:0; }
+.sidebar { width:var(--sidebar-w); flex-shrink:0; border-right:1px solid var(--border); padding:20px 12px 60px; position:sticky; top:calc(var(--shell-h) + var(--bar-h)); height:calc(100vh - var(--shell-h) - var(--bar-h) - var(--foot-h)); overflow-y:auto; background:var(--bg); }
+.sidebar::-webkit-scrollbar { width:4px; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--bg-muted); border-radius:4px; }
+.sidebar-label { display:flex; align-items:center; justify-content:space-between; font-family:var(--font-mono); font-size:10px; font-weight:500; letter-spacing:0.1em; color:var(--text-3); text-transform:uppercase; padding:0 8px; margin-bottom:8px; }
+.sidebar-count { background:var(--bg-muted); color:var(--text-3); font-family:var(--font-mono); font-size:10px; padding:1px 7px; border-radius:20px; border:1px solid var(--border); }
+.sidebar-item { display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:var(--radius); cursor:pointer; transition:background 0.12s,color 0.12s; color:var(--text-2); font-size:13.5px; font-weight:400; border:1px solid transparent; user-select:none; }
+.sidebar-item:hover { background:var(--bg-surface); color:var(--text); }
+.sidebar-item.active { background:var(--bg-surface); color:var(--primary); border-color:color-mix(in srgb,var(--primary) 20%,transparent); }
+.sidebar-item .count { margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--text-3); }
+.sidebar-item.active .count { color:var(--primary); opacity:0.7; }
+.app-icon { border-radius:7px; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:var(--font-display); flex-shrink:0; overflow:hidden; }
+.app-icon img { width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+.app-icon-sm { width:28px; height:28px; font-size:11px; }
+.app-icon-lg { width:50px; height:50px; border-radius:13px; font-size:18px; border:1px solid var(--border); }
+.sidebar-footer { position:absolute; bottom:0; left:0; right:0; padding:12px 20px; border-top:1px solid var(--border); font-size:11px; color:var(--text-3); font-family:var(--font-mono); background:var(--bg); }
+.mobile-app-tabs { display:none; overflow-x:auto; white-space:nowrap; padding:10px 16px; gap:8px; border-bottom:1px solid var(--border); background:var(--bg); -webkit-overflow-scrolling:touch; scrollbar-width:none; position:sticky; top:calc(var(--shell-h) + var(--bar-h)); z-index:90; }
+.mobile-app-tabs::-webkit-scrollbar { display:none; }
+.mobile-tab { display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:var(--radius); border:1px solid var(--border); background:var(--bg-surface); color:var(--text-2); font-size:13px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.mobile-tab.active { border-color:color-mix(in srgb,var(--primary) 35%,transparent); background:color-mix(in srgb,var(--primary) 12%,transparent); color:var(--primary); }
+.mobile-tab .app-icon { width:20px; height:20px; font-size:9px; }
+.main { flex:1; min-width:0; padding:32px 36px; }
+
+/* ── APP HEADER ── */
+.app-header { margin-bottom:28px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+.app-title-row { display:flex; align-items:center; gap:16px; margin-bottom:8px; }
+.app-title { font-family:var(--font-display); font-size:26px; font-weight:600; color:var(--text); letter-spacing:-0.01em; line-height:1.2; }
+.app-meta { display:flex; align-items:center; gap:14px; font-size:13px; color:var(--text-3); flex-wrap:wrap; }
+.app-bundle-id { font-family:var(--font-mono); font-size:12px; }
+.app-env-count { font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; }
+.meta-sep { color:var(--border-input); }
+.app-desc { font-size:13.5px; color:var(--text-2); margin-top:10px; margin-left:66px; line-height:1.6; }
+
+/* ── ENV CARDS ── */
+.env-list { display:flex; flex-direction:column; gap:10px; }
+.env-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; width:100%; transition:border-color 0.15s; }
+.env-card:hover { border-color:var(--border-input); }
+.env-card-header { display:flex; align-items:center; gap:16px; padding:14px 20px; cursor:pointer; user-select:none; }
+.env-header-left { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
+.env-badge-and-versions { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.env-versions { display:flex; align-items:center; gap:18px; flex:1; }
+.env-updated { font-family:var(--font-mono); font-size:11.5px; color:var(--text-3); margin-left:auto; white-space:nowrap; padding-right:4px; }
+.env-chevron { color:var(--text-3); transition:transform 0.25s; display:flex; align-items:center; flex-shrink:0; }
+.env-card.open .env-chevron { transform:rotate(180deg); }
+.env-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; font-family:var(--font-mono); font-size:11px; font-weight:500; letter-spacing:0.05em; border:1px solid; white-space:nowrap; }
+.env-badge-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.search-hl { background:color-mix(in srgb,var(--primary) 28%,transparent); color:var(--primary); border-radius:2px; padding:0; font-weight:500; display:inline; line-height:inherit; vertical-align:baseline; }
+.env-version-item { display:flex; align-items:center; gap:5px; font-size:13px; color:var(--text-2); }
+.env-version-item svg { color:var(--text-3); flex-shrink:0; }
+.env-version-num { font-family:var(--font-mono); font-size:12.5px; color:var(--text); }
+.env-card-body { display:none; padding:0 20px 20px; border-top:1px solid var(--border); }
+.env-card.open .env-card-body { display:block; }
+.platform-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding-top:16px; }
+.platform-block { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; display:flex; flex-direction:column; }
+.platform-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.platform-name { font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--text); }
+.platform-version { font-family:var(--font-mono); font-size:11px; color:var(--text-3); margin-left:auto; }
+.platform-updated { font-size:12px; color:var(--text-3); margin-bottom:12px; }
+.platform-desc { margin-bottom:14px; }
+.platform-desc-label { font-size:10px; font-weight:500; letter-spacing:0.09em; text-transform:uppercase; color:var(--text-3); font-family:var(--font-mono); margin-bottom:6px; }
+.desc-item { display:flex; align-items:flex-start; gap:7px; font-size:12.5px; color:var(--text-2); line-height:1.55; margin-bottom:3px; }
+.desc-item::before { content:'–'; color:var(--text-3); flex-shrink:0; }
+
+/* ── DOWNLOAD AREA ── */
+.download-area { margin-top:auto; display:flex; flex-direction:column; gap:6px; }
+.download-row { display:flex; align-items:center; gap:6px; }
+.download-btn { display:flex; align-items:center; justify-content:center; gap:7px; flex:1; padding:10px 14px; border-radius:var(--radius); border:1px solid; font-size:13px; font-weight:500; cursor:pointer; text-decoration:none; transition:all 0.15s; font-family:var(--font-body); }
+.btn-ios { background:color-mix(in srgb,#60a5fa 10%,transparent); border-color:color-mix(in srgb,#60a5fa 28%,transparent); color:#7ec4ff; }
+.btn-ios:hover { background:color-mix(in srgb,#60a5fa 18%,transparent); border-color:color-mix(in srgb,#60a5fa 42%,transparent); }
+.btn-android { background:color-mix(in srgb,var(--primary) 10%,transparent); border-color:color-mix(in srgb,var(--primary) 28%,transparent); color:var(--primary); }
+.btn-android:hover { background:color-mix(in srgb,var(--primary) 18%,transparent); border-color:color-mix(in srgb,var(--primary) 42%,transparent); }
+.btn-disabled { background:transparent; border-color:var(--border); color:var(--text-3); cursor:not-allowed; opacity:0.45; }
+.icon-btn { width:36px; height:36px; border-radius:var(--radius); border:1px solid var(--border); background:var(--bg-muted); color:var(--text-3); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.15s; flex-shrink:0; }
+.icon-btn:hover { background:var(--bg-elevated); color:var(--text); border-color:var(--border-input); }
+.icon-btn.copied { color:var(--primary); border-color:color-mix(in srgb,var(--primary) 35%,transparent); }
+
+/* ── DOWNLOAD COUNTER ── */
+.dl-counter { display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; color:var(--text-3); padding:4px 0; }
+.dl-counter svg { opacity:0.6; }
+
+
+
+/* ── EMPTY / ERROR ── */
+.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 20px; color:var(--text-3); text-align:center; gap:8px; }
+.empty-state svg { opacity:0.35; margin-bottom:6px; }
+.empty-state p { font-size:13px; line-height:1.6; }
+.empty-state code { font-family:var(--font-mono); font-size:12px; background:var(--bg-surface); padding:2px 6px; border-radius:4px; border:1px solid var(--border); }
+
+/* ── MADE BY BADGE ── */
+
+/* ── RESPONSIVE ── */
+@media (max-width:820px) { .sidebar{display:none;} .mobile-app-tabs{display:flex;} .main{padding:20px;} .env-versions{display:none;} .env-updated{display:none;} .app-desc{margin-left:0;} }
+@media (max-width:560px) { .platform-grid{grid-template-columns:1fr;} .main{padding:16px;} .app-title{font-size:20px;} .env-card-header{padding:12px 14px;} .env-card-body{padding:0 14px 16px;} .header-search{width:160px;} .app-icon-lg{width:40px;height:40px;border-radius:10px;font-size:15px;} .app-desc{margin-left:0;} }
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--bg-muted);border-radius:4px;}
+
+/* ── LOGIN OVERLAY ── */
+.login-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; }
+.login-overlay.hidden { display:none; }
+.login-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:40px 36px; width:100%; max-width:380px; text-align:center; }
+.login-card .logo-mark { width:48px; height:48px; border-radius:12px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-weight:700; font-size:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+.login-card h2 { font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--text); margin-bottom:6px; }
+.login-card p { font-size:13px; color:var(--text-3); margin-bottom:28px; line-height:1.6; }
+.google-btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:11px 16px; border-radius:var(--radius); border:1px solid var(--border-input); background:var(--bg-elevated); color:var(--text); font-size:14px; font-family:var(--font-body); font-weight:500; cursor:pointer; transition:all 0.15s; }
+.google-btn:hover { background:var(--bg-muted); border-color:var(--primary); }
+.google-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.login-cancel { margin-top:14px; font-size:12px; color:var(--text-3); cursor:pointer; background:none; border:none; font-family:var(--font-body); }
+.login-cancel:hover { color:var(--text-2); }
+.login-error { margin-top:14px; padding:10px 14px; border-radius:var(--radius); background:color-mix(in srgb,var(--destructive) 12%,transparent); border:1px solid color-mix(in srgb,var(--destructive) 28%,transparent); color:var(--destructive); font-size:12.5px; display:none; }
+.login-error.show { display:block; }
+
+/* ── ADMIN PANEL ── */
+.admin-overlay { position:fixed; inset:0; z-index:150; background:var(--bg); display:flex; flex-direction:column; }
+.admin-overlay.hidden { display:none; }
+.admin-header { display:flex; align-items:center; gap:14px; padding:0 24px; height:var(--header-h); border-bottom:1px solid var(--border); flex-shrink:0; }
+.admin-header h1 { font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text); letter-spacing:0.03em; }
+.admin-user { margin-left:auto; display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-3); }
+.admin-user img { width:26px; height:26px; border-radius:50%; border:1px solid var(--border); }
+.signout-btn { padding:4px 12px; border-radius:6px; font-size:12px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-2); cursor:pointer; font-family:var(--font-body); transition:all 0.15s; }
+.signout-btn:hover { background:var(--bg-elevated); color:var(--destructive); border-color:color-mix(in srgb,var(--destructive) 40%,transparent); }
+.admin-back { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-3); cursor:pointer; background:none; border:none; font-family:var(--font-body); transition:color 0.15s; padding:0; }
+.admin-back:hover { color:var(--text); }
+.admin-body { flex:1; overflow-y:auto; padding:28px 32px; display:flex; gap:24px; }
+.admin-app-list { width:220px; flex-shrink:0; }
+.admin-section-label { font-family:var(--font-mono); font-size:10px; font-weight:500; letter-spacing:0.1em; color:var(--text-3); text-transform:uppercase; margin-bottom:10px; }
+.admin-app-item { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:var(--radius); cursor:pointer; transition:background 0.12s; color:var(--text-2); font-size:13px; border:1px solid transparent; }
+.admin-app-item:hover { background:var(--bg-surface); color:var(--text); }
+.admin-app-item.active { background:var(--bg-surface); color:var(--primary); border-color:color-mix(in srgb,var(--primary) 20%,transparent); }
+.admin-add-app-btn { display:flex; align-items:center; gap:8px; width:100%; padding:9px 10px; border-radius:var(--radius); border:1px dashed var(--border); background:none; color:var(--text-3); font-size:13px; font-family:var(--font-body); cursor:pointer; transition:all 0.15s; margin-top:8px; }
+.admin-add-app-btn:hover { border-color:var(--primary); color:var(--primary); }
+.admin-editor { flex:1; min-width:0; }
+.admin-editor-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+.admin-editor-title { font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text); }
+.add-env-btn { display:flex; align-items:center; gap:7px; padding:8px 14px; border-radius:var(--radius); border:1px solid color-mix(in srgb,var(--primary) 35%,transparent); background:color-mix(in srgb,var(--primary) 10%,transparent); color:var(--primary); font-size:13px; font-family:var(--font-body); font-weight:500; cursor:pointer; transition:all 0.15s; }
+.add-env-btn:hover { background:color-mix(in srgb,var(--primary) 18%,transparent); }
+.admin-env-cards { display:flex; flex-direction:column; gap:12px; }
+.admin-env-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.admin-env-card-header { display:flex; align-items:center; gap:12px; padding:14px 18px; cursor:pointer; user-select:none; }
+.admin-env-card-chevron { margin-left:auto; color:var(--text-3); transition:transform 0.25s; }
+.admin-env-card.open .admin-env-card-chevron { transform:rotate(180deg); }
+.admin-env-card-body { display:none; padding:0 18px 18px; border-top:1px solid var(--border); }
+.admin-env-card.open .admin-env-card-body { display:block; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding-top:16px; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column:1/-1; }
+.form-label { font-size:11px; font-weight:500; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-3); font-family:var(--font-mono); }
+.form-input { background:var(--bg-elevated); border:1px solid var(--border-input); border-radius:var(--radius); padding:9px 12px; color:var(--text); font-size:13px; font-family:var(--font-body); outline:none; transition:border-color 0.15s; width:100%; }
+.form-input:focus { border-color:var(--ring); }
+.form-input::placeholder { color:var(--text-3); }
+textarea.form-input { resize:vertical; min-height:72px; line-height:1.5; }
+.form-actions { display:flex; align-items:center; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
+.save-btn { display:flex; align-items:center; gap:7px; padding:9px 18px; border-radius:var(--radius); border:none; background:var(--primary); color:var(--primary-fg); font-size:13px; font-weight:600; font-family:var(--font-body); cursor:pointer; transition:opacity 0.15s; }
+.save-btn:hover { opacity:0.88; }
+.save-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.delete-env-btn { margin-left:auto; display:flex; align-items:center; gap:6px; padding:9px 14px; border-radius:var(--radius); border:1px solid color-mix(in srgb,var(--destructive) 35%,transparent); background:color-mix(in srgb,var(--destructive) 8%,transparent); color:var(--destructive); font-size:13px; font-family:var(--font-body); cursor:pointer; transition:all 0.15s; }
+.delete-env-btn:hover { background:color-mix(in srgb,var(--destructive) 16%,transparent); }
+.save-status { font-size:12px; color:var(--text-3); font-family:var(--font-mono); }
+
+/* ── MODAL ── */
+.modal-overlay { position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; }
+.modal-overlay.hidden { display:none; }
+.modal-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px 28px 24px; width:100%; max-width:440px; }
+.modal-title { font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text); margin-bottom:20px; }
+.modal-actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+.modal-cancel { padding:9px 16px; border-radius:var(--radius); border:1px solid var(--border); background:none; color:var(--text-2); font-size:13px; font-family:var(--font-body); cursor:pointer; transition:all 0.15s; }
+.modal-cancel:hover { background:var(--bg-elevated); color:var(--text); }
+/* The shared theme also styles bare input elements. This page has its own input styles, so cancel the extras. */
+.header-search input, .form-input { height:auto; box-shadow:none; }
+.header-search input { padding:0; border-radius:0; background:none; }
+.header-search input:focus, .form-input:focus { box-shadow:none; }
+.header-search input:focus { border:none; }
+</style>
+</head>
+<body data-page="builds">
+<script src="../../assets/js/site.js"></script>
+
+<div class="nb-bar">
+  <div class="nb-title">Native Builds</div>
+  <div class="header-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search builds, versions, envs…" autocomplete="off">
+    <span class="kbd">/</span>
+  </div>
+  <div class="header-actions">
+    <div class="header-time" id="headerTime"></div>
+    <button class="admin-btn" id="adminBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Manage builds
+    </button>
+  </div>
+</div>
+
+<div class="mobile-app-tabs" id="mobileAppTabs"></div>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-label">Applications <span class="sidebar-count" id="sidebarCount">0</span></div>
+    <nav id="sidebarNav"></nav>
+    <div class="sidebar-footer">v0.1.0</div>
+  </aside>
+  <main class="main" id="mainContent">
+    <div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m8 21 4-4 4 4"/><path d="M12 17v4"/></svg>
+      <p>Loading builds…</p>
+    </div>
+  </main>
+</div>
+
+<!-- Made by badge -->
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay hidden" id="loginOverlay">
+  <div class="login-card">
+    <div class="logo-mark">NB</div>
+    <h2>Admin Access</h2>
+    <p>Sign in with your Google account.<br>Only authorised emails can access the admin panel.</p>
+    <button class="google-btn" id="googleSignInBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <div class="login-error" id="loginError"></div>
+    <button class="login-cancel" id="loginCancel">Cancel</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay hidden" id="adminOverlay">
+  <div class="admin-header">
+    <button class="admin-back" id="adminBack">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>Back
+    </button>
+    <h1>Admin Panel</h1>
+    <div class="admin-user">
+      <img id="adminUserPhoto" src="" alt="" style="display:none;">
+      <span id="adminUserEmail"></span>
+      <button class="signout-btn" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-app-list">
+      <div class="admin-section-label">Applications</div>
+      <div id="adminAppList"></div>
+      <button class="admin-add-app-btn" id="addAppBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add App
+      </button>
+    </div>
+    <div class="admin-editor">
+      <div id="adminEditorContent">
+        <div class="empty-state" style="padding:60px 0;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <p>Select an app to manage its environments</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD APP MODAL -->
+<div class="modal-overlay hidden" id="addAppModal">
+  <div class="modal-card">
+    <div class="modal-title">Add New App</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label class="form-label">App ID (unique, no spaces)</label><input class="form-input" id="newAppId" placeholder="e.g. myapp"></div>
+      <div class="form-group"><label class="form-label">App Name</label><input class="form-input" id="newAppName" placeholder="e.g. My App"></div>
+      <div class="form-group"><label class="form-label">Bundle ID</label><input class="form-input" id="newAppBundle" placeholder="e.g. com.company.myapp"></div>
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="newAppDesc" placeholder="Short description"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="addAppCancel">Cancel</button>
+      <button class="save-btn" id="addAppSave"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Create App</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT APP MODAL -->
+<div class="modal-overlay hidden" id="editAppModal">
+  <div class="modal-card">
+    <div class="modal-title">Edit App Details</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label class="form-label">App Name</label><input class="form-input" id="editAppName" placeholder="e.g. My App"></div>
+      <div class="form-group"><label class="form-label">Bundle ID</label><input class="form-input" id="editAppBundle" placeholder="e.g. com.company.myapp"></div>
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="editAppDesc" placeholder="Short description"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="editAppCancel">Cancel</button>
+      <button class="save-btn" id="editAppSave"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ENV MODAL -->
+<div class="modal-overlay hidden" id="addEnvModal">
+  <div class="modal-card">
+    <div class="modal-title">Add New Environment</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label class="form-label">Environment Name</label><input class="form-input" id="newEnvName" placeholder="e.g. QC, STG, PROD, DEV"></div>
+      <div class="form-group"><label class="form-label">Color (hex)</label><input class="form-input" id="newEnvColor" placeholder="#3fc1d4" value="#3fc1d4"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="addEnvCancel">Cancel</button>
+      <button class="save-btn" id="addEnvSave"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Add Environment</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy, increment }
+                           from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+                           from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+const firebaseConfig = {
+  apiKey: "AIzaSyCkcWluxXX0Va-HpIkRPdPhipzyg0Kyn6c",
+  authDomain: "native-builds.firebaseapp.com",
+  projectId: "native-builds",
+  storageBucket: "native-builds.firebasestorage.app",
+  messagingSenderId: "978687765943",
+  appId: "1:978687765943:web:feb8a5f6fe216300508c32"
+};
+const fbApp=initializeApp(firebaseConfig);
+const db=getFirestore(fbApp);
+const auth=getAuth(fbApp);
+const provider=new GoogleAuthProvider();
+
+/* ── HELPERS ── */
+const ENV_COLORS={
+  QC:   {bg:'rgba(110,231,183,0.12)',border:'rgba(110,231,183,0.28)',text:'#6ee7b7',dot:'#34d399'},
+  PRE:  {bg:'rgba(251,191,36,0.12)', border:'rgba(251,191,36,0.30)', text:'#fbbf24',dot:'#f59e0b'},
+  LOCAL:{bg:'rgba(148,163,184,0.10)',border:'rgba(148,163,184,0.25)',text:'#94a3b8',dot:'#64748b'},
+  DEV:  {bg:'rgba(167,139,250,0.12)',border:'rgba(167,139,250,0.28)',text:'#a78bfa',dot:'#7c3aed'},
+  PROD: {bg:'rgba(248,113,113,0.12)',border:'rgba(248,113,113,0.28)',text:'#f87171',dot:'#ef4444'},
+  STG:  {bg:'rgba(96,165,250,0.12)', border:'rgba(96,165,250,0.28)', text:'#60a5fa',dot:'#3b82f6'},
+};
+const ICON_COLORS=['#3fc1d4','#a78bfa','#f472b6','#fb923c','#6ee7b7','#60a5fa','#facc15','#34d399'];
+const envColor=n=>ENV_COLORS[n.toUpperCase()]||{bg:'rgba(148,163,184,0.10)',border:'rgba(148,163,184,0.25)',text:'#94a3b8',dot:'#64748b'};
+const iconColor=i=>ICON_COLORS[i%ICON_COLORS.length];
+const initials=n=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+function formatDate(iso){
+  if(!iso)return'—';
+  const d=new Date(iso),now=new Date(),diff=(now-d)/1000;
+  if(diff<60)return'Just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return'Today, '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return mn[d.getMonth()]+' '+d.getDate()+', '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+function buildIcon(app,idx,cls){
+  const col=iconColor(idx),bg=col+'22',init=initials(app.name);
+  if(app.icon)return`<div class="app-icon ${cls}" style="background:${bg};color:${col};"><img src="${app.icon}" alt="${init}" onerror="this.style.display='none';this.parentElement.textContent='${init}';"></div>`;
+  return`<div class="app-icon ${cls}" style="background:${bg};color:${col};">${init}</div>`;
+}
+function hl(text,q){
+  if(!q||!text)return text;
+  const esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return text.replace(new RegExp(`(${esc})`,'gi'),'<mark class="search-hl">$1</mark>');
+}
+
+/* ── BUILD ENV CARD (public) ── */
+function buildEnvCard(env,isOpen,q){
+  const c=envColor(env.name),ios=env.ios||{},and=env.android||{};
+  const iosVer=ios.version||'—',andVer=and.version||'—';
+  const iosDesc=(ios.description||[]).map(n=>`<div class="desc-item"><span>${hl(n,q)}</span></div>`).join('');
+  const andDesc=(and.description||[]).map(n=>`<div class="desc-item"><span>${hl(n,q)}</span></div>`).join('');
+  const iosCount=ios.downloads||0, andCount=and.downloads||0;
+  const iosKey=`${env._appId}_${env.id}_ios`, andKey=`${env._appId}_${env.id}_android`;
+
+  return`<div class="env-card${isOpen?' open':''}">
+    <div class="env-card-header" onclick="toggleEnv(this.parentElement)">
+      <div class="env-header-left"><div class="env-badge-and-versions">
+        <span class="env-badge" style="background:${c.bg};border-color:${c.border};color:${c.text};">
+          <span class="env-badge-dot" style="background:${c.dot};"></span><span>${hl(env.name,q)}</span>
+        </span>
+        <div class="env-versions">
+          <div class="env-version-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72"/><path d="M19.13 5.09C15.22 9.14 11 10.44 3.01 10.35"/></svg><span class="env-version-num">${hl(iosVer,q)}</span></div>
+          <div class="env-version-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><span class="env-version-num">${hl(andVer,q)}</span></div>
+        </div>
+      </div></div>
+      <div class="env-updated">${formatDate(ios.updated||and.updated)}</div>
+      <div class="env-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    </div>
+    <div class="env-card-body"><div class="platform-grid">
+      <div class="platform-block">
+        <div class="platform-header"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72"/><path d="M19.13 5.09C15.22 9.14 11 10.44 3.01 10.35"/></svg><span class="platform-name">iOS</span><span class="platform-version">${hl(iosVer,q)}</span></div>
+        ${ios.updated?`<div class="platform-updated">Updated ${formatDate(ios.updated)}</div>`:'<div class="platform-updated">—</div>'}
+        ${iosDesc?`<div class="platform-desc"><div class="platform-desc-label">What's new</div>${iosDesc}</div>`:''}
+        <div class="download-area">
+          <div class="download-row">
+            <a class="download-btn ${ios.url?'btn-ios':'btn-disabled'}" ${ios.url?`href="${ios.url}" target="_blank" onclick="trackDownload('${env._appId}','${env.id}','ios')"`:''}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>${ios.url?'Install IPA':'Not available'}</a>
+            ${ios.url?`<button class="icon-btn" title="Copy link" onclick="copyLink('${ios.url}',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`:''}
+          </div>
+          <div class="dl-counter"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span id="dlc-${iosKey}">${iosCount}</span> download${iosCount!==1?'s':''}</div>
+        </div>
+      </div>
+      <div class="platform-block">
+        <div class="platform-header"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3fc1d4" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg><span class="platform-name">Android</span><span class="platform-version">${hl(andVer,q)}</span></div>
+        ${and.updated?`<div class="platform-updated">Updated ${formatDate(and.updated)}</div>`:'<div class="platform-updated">—</div>'}
+        ${andDesc?`<div class="platform-desc"><div class="platform-desc-label">What's new</div>${andDesc}</div>`:''}
+        <div class="download-area">
+          <div class="download-row">
+            <a class="download-btn ${and.url?'btn-android':'btn-disabled'}" ${and.url?`href="${and.url}" target="_blank" onclick="trackDownload('${env._appId}','${env.id}','android')"`:''}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>${and.url?'Download APK':'Not available'}</a>
+            ${and.url?`<button class="icon-btn" title="Copy link" onclick="copyLink('${and.url}',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`:''}
+          </div>
+          <div class="dl-counter"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span id="dlc-${andKey}">${andCount}</span> download${andCount!==1?'s':''}</div>
+        </div>
+      </div>
+    </div></div>
+  </div>`;
+}
+
+/* ── COPY LINK ── */
+window.copyLink=async(url,btn)=>{
+  try{
+    await navigator.clipboard.writeText(url);
+    btn.classList.add('copied');
+    const orig=btn.innerHTML;
+    btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=orig;},2000);
+  }catch{alert('Could not copy link.');}
+};
+
+/* ── DOWNLOAD COUNTER ── */
+window.trackDownload=async(appId,envId,platform)=>{
+  const key=`${appId}_${envId}_${platform}`;
+  try{
+    await updateDoc(doc(db,'apps',appId,'environments',envId),{[`${platform}_downloads`]:increment(1)});
+    const el=document.getElementById(`dlc-${key}`);
+    if(el){
+      const cur=parseInt(el.textContent)||0;
+      el.textContent=cur+1;
+      const row=el.closest('.dl-counter');
+      if(row)row.lastChild.textContent=` download${cur+1!==1?'s':''}`;
+    }
+  }catch(e){console.error('Counter error',e);}
+};
+
+/* ── PUBLIC STATE ── */
+let allApps=[],activeAppId=null;
+
+window.toggleEnv=card=>{
+  const open=card.classList.contains('open');
+  card.closest('.env-list').querySelectorAll('.env-card').forEach(c=>c.classList.remove('open'));
+  if(!open)card.classList.add('open');
+};
+window.clearSearchAndShow=appId=>{
+  const inp=document.getElementById('searchInput');
+  if(inp)inp.value='';
+  showApp(appId,null);
+};
+
+function showApp(appId,filteredEnvs,q){
+  activeAppId=appId;
+  const idx=allApps.findIndex(a=>a.id===appId),app=allApps[idx];
+  if(!app)return;
+  const envs=filteredEnvs||app.environments||[];
+  const total=app.environments?.length||0;
+  const label=filteredEnvs?`${envs.length} of ${total} environment${total!==1?'s':''}`:`${total} environment${total!==1?'s':''}`;
+  const noRes=filteredEnvs&&envs.length===0?`<div class="empty-state" style="padding:40px 0;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No environments match</p></div>`:'';
+  document.getElementById('mainContent').innerHTML=`
+    <div class="app-header"><div class="app-title-row">${buildIcon(app,idx,'app-icon-lg')}<div><div class="app-title">${app.name}</div><div class="app-meta">${app.bundleId?`<span class="app-bundle-id">${app.bundleId}</span><span class="meta-sep">·</span>`:''}<span class="app-env-count">${label}</span></div></div></div>${app.description?`<p class="app-desc">${app.description}</p>`:''}</div>
+    <div class="env-list">${envs.map((e,i)=>buildEnvCard(e,i===0,q)).join('')}${noRes}</div>`;
+  document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.toggle('active',el.dataset.id===appId));
+  document.querySelectorAll('.mobile-tab').forEach(el=>el.classList.toggle('active',el.dataset.id===appId));
+}
+
+function buildSidebar(apps){
+  document.getElementById('sidebarCount').textContent=apps.length;
+  document.getElementById('sidebarNav').innerHTML=apps.map((a,i)=>`<div class="sidebar-item" data-id="${a.id}" onclick="clearSearchAndShow('${a.id}')">${buildIcon(a,i,'app-icon-sm')}<span>${a.name}</span><span class="count">${String(a.environments?.length||0).padStart(2,'0')}</span></div>`).join('');
+}
+function buildMobileTabs(apps){
+  document.getElementById('mobileAppTabs').innerHTML=apps.map((a,i)=>`<div class="mobile-tab" data-id="${a.id}" onclick="clearSearchAndShow('${a.id}')">${buildIcon(a,i,'app-icon')}${a.name}</div>`).join('');
+}
+
+/* ── LOAD FROM FIRESTORE ── */
+async function loadApps(){
+  try{
+    const snap=await getDocs(query(collection(db,'apps'),orderBy('order')));
+    allApps=[];
+    for(const d of snap.docs){
+      const data={id:d.id,...d.data(),environments:[]};
+      const eSnap=await getDocs(query(collection(db,'apps',d.id,'environments'),orderBy('order')));
+      for(const e of eSnap.docs){
+        const ed=e.data();
+        data.environments.push({
+          id:e.id,name:e.id,color:ed.color||'',_appId:d.id,
+          ios:{version:ed.ios_version||'',url:ed.ios_url||'',updated:ed.ios_updated||'',description:ed.ios_description||[],downloads:ed.ios_downloads||0},
+          android:{version:ed.android_version||'',url:ed.android_url||'',updated:ed.android_updated||'',description:ed.android_description||[],downloads:ed.android_downloads||0}
+        });
+      }
+      allApps.push(data);
+    }
+    buildSidebar(allApps);buildMobileTabs(allApps);
+    if(allApps.length)showApp(allApps[0].id);
+  }catch(e){
+    console.error(e);
+    document.getElementById('mainContent').innerHTML=`<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>Could not load data from Firestore.</p></div>`;
+  }
+}
+
+/* ── SEARCH ── */
+let searchTimeout=null;
+function envMatchesQuery(env,q){
+  return env.name.toLowerCase().includes(q)
+    ||(env.ios?.version||'').toLowerCase().includes(q)
+    ||(env.android?.version||'').toLowerCase().includes(q)
+    ||(env.ios?.description||[]).some(d=>d.toLowerCase().includes(q))
+    ||(env.android?.description||[]).some(d=>d.toLowerCase().includes(q));
+}
+function filterApps(q){
+  q=q.trim().toLowerCase();
+  if(!q){showApp(activeAppId||allApps[0]?.id);return;}
+  const a=allApps.find(a=>a.id===activeAppId);
+  if(!a)return;
+  showApp(a.id,(a.environments||[]).filter(e=>envMatchesQuery(e,q)),q);
+}
+
+/* ── THEME / TIME ── */
+function updateTime(){document.getElementById('headerTime').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+
+/* ══════════════════
+   ADMIN
+══════════════════ */
+let currentAdminAppId=null,currentUser=null;
+async function isAllowedAdmin(email){try{return(await getDoc(doc(db,'admins',email))).exists();}catch{return false;}}
+const showLogin=()=>document.getElementById('loginOverlay').classList.remove('hidden');
+const hideLogin=()=>document.getElementById('loginOverlay').classList.add('hidden');
+const showAdmin=()=>document.getElementById('adminOverlay').classList.remove('hidden');
+const hideAdmin=()=>document.getElementById('adminOverlay').classList.add('hidden');
+
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    const ok=await isAllowedAdmin(user.email);
+    if(ok){
+      currentUser=user;hideLogin();
+      document.getElementById('adminUserEmail').textContent=user.email;
+      const ph=document.getElementById('adminUserPhoto');
+      if(user.photoURL){ph.src=user.photoURL;ph.style.display='block';}
+      showAdmin();renderAdminAppList();
+    }else{
+      await signOut(auth);
+      const err=document.getElementById('loginError');
+      err.textContent=`Access denied. ${user.email} is not an authorised admin.`;
+      err.classList.add('show');
+      document.getElementById('googleSignInBtn').disabled=false;
+    }
+  }
+});
+
+document.getElementById('adminBtn').addEventListener('click',()=>{
+  if(currentUser){showAdmin();renderAdminAppList();}
+  else{document.getElementById('loginError').classList.remove('show');showLogin();}
+});
+document.getElementById('googleSignInBtn').addEventListener('click',async()=>{
+  document.getElementById('googleSignInBtn').disabled=true;
+  try{await signInWithPopup(auth,provider);}
+  catch{document.getElementById('googleSignInBtn').disabled=false;const e=document.getElementById('loginError');e.textContent='Sign in failed. Please try again.';e.classList.add('show');}
+});
+document.getElementById('loginCancel').addEventListener('click',hideLogin);
+document.getElementById('adminBack').addEventListener('click',hideAdmin);
+document.getElementById('signOutBtn').addEventListener('click',async()=>{await signOut(auth);currentUser=null;hideAdmin();});
+
+/* ── Admin app list ── */
+function renderAdminAppList(){
+  document.getElementById('adminAppList').innerHTML=allApps.map((a,i)=>`
+    <div class="admin-app-item${a.id===currentAdminAppId?' active':''}" onclick="selectAdminApp('${a.id}')">
+      ${buildIcon(a,i,'app-icon-sm')}<span>${a.name}</span>
+    </div>`).join('');
+}
+window.selectAdminApp=appId=>{currentAdminAppId=appId;renderAdminAppList();renderAdminEditor(appId);};
+
+/* ── Admin editor ── */
+function renderAdminEditor(appId){
+  const app=allApps.find(a=>a.id===appId);if(!app)return;
+  const idx=allApps.indexOf(app);
+  document.getElementById('adminEditorContent').innerHTML=`
+    <div class="admin-editor-header">
+      <div style="display:flex;align-items:center;gap:12px;">${buildIcon(app,idx,'app-icon-sm')}<div class="admin-editor-title">${app.name}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button class="add-env-btn" onclick="openAddEnvModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Environment</button>
+        <button class="add-env-btn" style="background:color-mix(in srgb,var(--text-3) 10%,transparent);border-color:color-mix(in srgb,var(--text-3) 25%,transparent);color:var(--text-2);" onclick="openEditAppModal('${appId}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Details</button>
+        <button class="delete-env-btn" onclick="deleteApp('${appId}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete App</button>
+      </div>
+    </div>
+    <div class="admin-env-cards">
+      ${app.environments.length===0
+        ?'<div class="empty-state" style="padding:40px 0;"><p>No environments yet. Add one above.</p></div>'
+        :app.environments.map(e=>buildAdminEnvCard(appId,e)).join('')}
+    </div>`;
+}
+
+function buildAdminEnvCard(appId,env){
+  const c=envColor(env.name),ios=env.ios||{},and=env.android||{};
+  return`<div class="admin-env-card" id="adminEnvCard-${env.id}">
+    <div class="admin-env-card-header" onclick="toggleAdminCard('${env.id}')">
+      <span class="env-badge" style="background:${c.bg};border-color:${c.border};color:${c.text};"><span class="env-badge-dot" style="background:${c.dot};"></span>${env.name}</span>
+      <span style="font-size:12px;color:var(--text-3);font-family:var(--font-mono);">iOS ${ios.version||'—'} · Android ${and.version||'—'}</span>
+      <svg class="admin-env-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="admin-env-card-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">iOS Version</label><input class="form-input" id="f-${env.id}-ios-ver" value="${ios.version||''}" placeholder="e.g. 2.5.1"></div>
+        <div class="form-group"><label class="form-label">iOS Download URL</label><input class="form-input" id="f-${env.id}-ios-url" value="${ios.url||''}" placeholder="https://…/build.ipa"></div>
+        <div class="form-group full"><label class="form-label">iOS What's New (one item per line)</label><textarea class="form-input" id="f-${env.id}-ios-desc" placeholder="Bug fixes&#10;New feature">${(ios.description||[]).join('\n')}</textarea></div>
+        <div class="form-group"><label class="form-label">Android Version</label><input class="form-input" id="f-${env.id}-and-ver" value="${and.version||''}" placeholder="e.g. 2.5.0"></div>
+        <div class="form-group"><label class="form-label">Android Download URL</label><input class="form-input" id="f-${env.id}-and-url" value="${and.url||''}" placeholder="https://…/build.apk"></div>
+        <div class="form-group full"><label class="form-label">Android What's New (one item per line)</label><textarea class="form-input" id="f-${env.id}-and-desc" placeholder="Bug fixes&#10;New feature">${(and.description||[]).join('\n')}</textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="save-btn" onclick="saveEnv('${appId}','${env.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Save Changes</button>
+        <span class="save-status" id="status-${env.id}"></span>
+        <button class="delete-env-btn" onclick="deleteEnv('${appId}','${env.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+window.toggleAdminCard=id=>{
+  const card=document.getElementById(`adminEnvCard-${id}`),open=card.classList.contains('open');
+  document.querySelectorAll('.admin-env-card').forEach(c=>c.classList.remove('open'));
+  if(!open)card.classList.add('open');
+};
+
+window.saveEnv=async(appId,envId)=>{
+  const statusEl=document.getElementById(`status-${envId}`);
+  const btn=document.querySelector(`#adminEnvCard-${envId} .save-btn`);
+  btn.disabled=true;statusEl.textContent='Saving…';
+  const now=new Date().toISOString().slice(0,19);
+  const iosVer=document.getElementById(`f-${envId}-ios-ver`).value.trim();
+  const andVer=document.getElementById(`f-${envId}-and-ver`).value.trim();
+  const data={
+    ios_version:iosVer,ios_url:document.getElementById(`f-${envId}-ios-url`).value.trim(),
+    ios_updated:iosVer?now:'',ios_description:document.getElementById(`f-${envId}-ios-desc`).value.split('\n').map(s=>s.trim()).filter(Boolean),
+    android_version:andVer,android_url:document.getElementById(`f-${envId}-and-url`).value.trim(),
+    android_updated:andVer?now:'',android_description:document.getElementById(`f-${envId}-and-desc`).value.split('\n').map(s=>s.trim()).filter(Boolean),
+  };
+  try{
+    await updateDoc(doc(db,'apps',appId,'environments',envId),data);
+    statusEl.textContent='✓ Saved';setTimeout(()=>{statusEl.textContent='';},2500);
+    await loadApps();
+  }catch(e){statusEl.textContent='✗ Error';console.error(e);}
+  btn.disabled=false;
+};
+
+window.deleteEnv=async(appId,envId)=>{
+  if(!confirm(`Delete environment "${envId}"? This cannot be undone.`))return;
+  try{await deleteDoc(doc(db,'apps',appId,'environments',envId));await loadApps();renderAdminEditor(appId);}
+  catch(e){alert('Error deleting.');console.error(e);}
+};
+
+window.deleteApp=async(appId)=>{
+  const app=allApps.find(a=>a.id===appId);
+  if(!confirm(`Delete app "${app?.name}"?\n\nThis will also delete ALL its environments. This cannot be undone.`))return;
+  try{
+    const eSnap=await getDocs(collection(db,'apps',appId,'environments'));
+    for(const e of eSnap.docs)await deleteDoc(doc(db,'apps',appId,'environments',e.id));
+    await deleteDoc(doc(db,'apps',appId));
+    currentAdminAppId=null;
+    document.getElementById('adminEditorContent').innerHTML=`<div class="empty-state" style="padding:60px 0;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><p>App deleted. Select an app or add a new one.</p></div>`;
+    await loadApps();renderAdminAppList();
+  }catch(e){alert('Error deleting app.');console.error(e);}
+};
+
+/* ── Edit App Modal ── */
+window.openEditAppModal=appId=>{
+  const app=allApps.find(a=>a.id===appId);if(!app)return;
+  document.getElementById('editAppName').value=app.name||'';
+  document.getElementById('editAppBundle').value=app.bundleId||'';
+  document.getElementById('editAppDesc').value=app.description||'';
+  document.getElementById('editAppModal').dataset.appId=appId;
+  document.getElementById('editAppModal').classList.remove('hidden');
+};
+document.getElementById('editAppCancel').addEventListener('click',()=>document.getElementById('editAppModal').classList.add('hidden'));
+document.getElementById('editAppSave').addEventListener('click',async()=>{
+  const appId=document.getElementById('editAppModal').dataset.appId;
+  const name=document.getElementById('editAppName').value.trim();
+  if(!name){alert('App Name is required.');return;}
+  try{
+    await updateDoc(doc(db,'apps',appId),{
+      name,
+      bundleId:document.getElementById('editAppBundle').value.trim(),
+      description:document.getElementById('editAppDesc').value.trim()
+    });
+    document.getElementById('editAppModal').classList.add('hidden');
+    await loadApps();renderAdminAppList();renderAdminEditor(appId);
+  }catch(e){alert('Error saving app details.');console.error(e);}
+});
+
+/* ── Add Env Modal ── */
+window.openAddEnvModal=()=>{
+  document.getElementById('newEnvName').value='';
+  document.getElementById('newEnvColor').value='#3fc1d4';
+  document.getElementById('addEnvModal').classList.remove('hidden');
+};
+document.getElementById('addEnvCancel').addEventListener('click',()=>document.getElementById('addEnvModal').classList.add('hidden'));
+document.getElementById('addEnvSave').addEventListener('click',async()=>{
+  const name=document.getElementById('newEnvName').value.trim().toUpperCase();
+  const color=document.getElementById('newEnvColor').value.trim();
+  if(!name){alert('Please enter a name.');return;}
+  if(!currentAdminAppId)return;
+  const order=(allApps.find(a=>a.id===currentAdminAppId)?.environments?.length||0)+1;
+  try{
+    await setDoc(doc(db,'apps',currentAdminAppId,'environments',name),{color,order,ios_version:'',ios_url:'',ios_updated:'',ios_description:[],ios_downloads:0,android_version:'',android_url:'',android_updated:'',android_description:[],android_downloads:0});
+    document.getElementById('addEnvModal').classList.add('hidden');
+    await loadApps();renderAdminEditor(currentAdminAppId);
+  }catch(e){alert('Error adding environment.');console.error(e);}
+});
+
+/* ── Add App Modal ── */
+document.getElementById('addAppBtn').addEventListener('click',()=>{
+  ['newAppId','newAppName','newAppBundle','newAppDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addAppModal').classList.remove('hidden');
+});
+document.getElementById('addAppCancel').addEventListener('click',()=>document.getElementById('addAppModal').classList.add('hidden'));
+document.getElementById('addAppSave').addEventListener('click',async()=>{
+  const id=document.getElementById('newAppId').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const name=document.getElementById('newAppName').value.trim();
+  if(!id||!name){alert('App ID and Name are required.');return;}
+  try{
+    await setDoc(doc(db,'apps',id),{name,bundleId:document.getElementById('newAppBundle').value.trim(),description:document.getElementById('newAppDesc').value.trim(),order:allApps.length+1,icon:''});
+    document.getElementById('addAppModal').classList.add('hidden');
+    await loadApps();renderAdminAppList();
+  }catch(e){alert('Error creating app.');console.error(e);}
+});
+
+/* ── INIT ── */
+async function init(){
+  updateTime();setInterval(updateTime,30000);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();document.getElementById('searchInput').focus();}
+    if(e.key==='Escape'){const inp=document.getElementById('searchInput');inp.blur();inp.value='';showApp(activeAppId||allApps[0]?.id,null);}
+  });
+  document.getElementById('searchInput').addEventListener('input',e=>{clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>filterApps(e.target.value),120);});
+  await loadApps();
+}
+init();
+</script>
+</body>
+</html>

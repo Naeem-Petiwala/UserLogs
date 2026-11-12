@@ -1,0 +1,103 @@
+/* ==========================================================================
+   MASTER THEME  (assets/css/theme.css)
+   One file for the look of every page. Change a color or spacing here and
+   all pages follow. Page-only styles live next to each page.
+   Contents: 1 tokens  2 base  3 site header and nav  4 layout  5 cards
+             6 forms and inputs  7 buttons  8 small parts  9 toast and footer
+   Use on a new page:  <link rel="stylesheet" href="../../assets/css/theme.css">
+   ========================================================================== */
+/* 1. tokens */
+:root,[data-theme=dark]{--bg:#1a1f24;--surface:#222931;--raised:#2a323b;--muted:#292f37;--line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.15);--text:#f3f6f7;--text-2:#a3acb3;--text-3:#949ba4;--primary:#3fc1d4;--on-primary:#181d22;--danger:#ed776c;color-scheme:dark}
+[data-theme=light]{--bg:#f4f7f7;--surface:#fff;--raised:#f6f9f9;--muted:#eaeff0;--line:#e1e6e9;--line-2:#cfd7db;--text:#1f262d;--text-2:#56626c;--text-3:#687179;--primary:#117d8e;--on-primary:#fff;--danger:#d23b2a;color-scheme:light}
+:root{--display:'Syne',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',ui-monospace,monospace;--r:10px;--r-lg:16px}
+:root{--shell-h:57px;--foot-h:52px}
+/* 2. base */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--text);font:15px/1.5 var(--body)}
+body{min-height:100vh;display:flex;flex-direction:column}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.hidden{display:none!important}
+[hidden]{display:none!important}
+/* 3. site header and navigation (built by assets/js/site.js) */
+.header{position:sticky;top:0;z-index:50;display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;padding:10px 24px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font:600 16px var(--display);letter-spacing:.04em}
+.brand-mark{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--primary);color:var(--on-primary);font:700 12px var(--display)}
+.tool-nav{display:flex;align-items:center;gap:4px;margin-right:auto}
+.nav-link{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;border:1px solid transparent;background:none;color:var(--text-2);font-size:13.5px;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s}
+.nav-link:hover{background:var(--surface);color:var(--text)}
+.nav-link.active{background:var(--surface);color:var(--primary);border-color:var(--line)}
+.nav-link svg{opacity:.6}
+.theme-btn{display:grid;place-items:center;width:34px;height:34px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text-2)}
+.theme-btn:hover{color:var(--text);border-color:var(--line-2)}
+.admin-link{flex:none}
+.admin-link svg{opacity:.7}
+/* 4. layout */
+.page{width:100%;max-width:960px;margin:0 auto;padding:0 24px}
+.page-head{padding-top:36px;padding-bottom:22px}
+.page-head h1{font:600 28px/1.2 var(--display);letter-spacing:-.01em}
+.page-head p{margin-top:6px;color:var(--text-2)}
+/* 5. cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px}
+.card-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;font:600 16px var(--display)}
+/* 6. forms and inputs */
+.field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.label-row{display:flex;align-items:center;justify-content:space-between;min-height:22px}
+label,.label{font-size:13px;font-weight:500;color:var(--text-2)}
+input,select{width:100%;height:42px;padding:0 12px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--raised);font-size:14px;transition:border-color .15s}
+input::placeholder{color:var(--text-3)}
+input:hover,select:hover{border-color:var(--text-3)}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent)}
+select{appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237d8892' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;background-size:14px}
+.with-steps{display:flex;gap:6px}
+.with-steps input,.with-steps select{flex:1;min-width:0;width:auto}
+.step-btn{flex:0 0 42px;height:42px;display:grid;place-items:center;border-radius:var(--r);border:1px solid var(--line-2);background:var(--raised);color:var(--text-2);font-size:15px;line-height:1;transition:all .15s}
+.step-btn:hover{color:var(--primary);border-color:var(--primary)}
+.step-btn.wide{flex:0 0 auto;padding:0 12px;font-size:13px}
+.link-btn{background:none;border:none;padding:2px 0;font-size:12.5px;color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.link-btn.active{color:var(--text-2)}
+.segmented{height:42px;position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:var(--r);background:var(--muted);border:1px solid var(--line);cursor:pointer;user-select:none}
+.segmented input{position:absolute;opacity:0;width:0;height:0}
+.seg{display:grid;place-items:center;text-align:center;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text-2);transition:all .15s}
+.segmented input:checked~.seg-live{background:var(--primary);color:var(--on-primary)}
+.segmented input:not(:checked)~.seg-local{background:var(--raised);color:var(--text);box-shadow:0 0 0 1px var(--line-2)}
+.segmented:has(input:focus-visible){outline:2px solid var(--primary);outline-offset:2px}
+/* 7. buttons (base size 38px; a page can resize its own) */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 16px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--raised);font-size:13.5px;font-weight:500;white-space:nowrap;transition:all .15s}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.primary:hover{filter:brightness(1.08);color:var(--on-primary)}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.danger:hover{background:var(--danger);color:#fff}
+.btn.sm{height:34px;padding:0 14px;font-size:13px}
+[aria-disabled=true]{opacity:.5;cursor:not-allowed}
+/* 8. small parts */
+.pill{padding:3px 10px;border-radius:20px;font:500 12px var(--body);border:1px solid var(--line-2);color:var(--text-2)}
+.pill.live{color:var(--primary);border-color:color-mix(in srgb,var(--primary) 40%,transparent)}
+.badge{padding:2px 9px;border-radius:20px;border:1px solid var(--line-2);font-size:12px;color:var(--text-2)}
+.chip{padding:3px 11px;border-radius:20px;border:1px solid var(--line-2);color:var(--text-2);font-size:12.5px}
+.chip.ok{color:var(--primary);border-color:color-mix(in srgb,var(--primary) 40%,transparent)}
+.mono{font-family:var(--mono)}
+/* 9. toast and footer */
+.alert{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:none;max-width:calc(100% - 32px);padding:12px 18px;border-radius:var(--r);background:var(--raised);border:1px solid var(--danger);color:var(--text);font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:100}
+.alert.ok{border-color:var(--primary)}
+.site-foot{margin-top:auto;display:flex;justify-content:space-between;gap:12px;padding:16px 24px;border-top:1px solid var(--line);font-size:12.5px;color:var(--text-3);position:sticky;bottom:0;z-index:30;background:var(--bg);min-height:var(--foot-h)}
+.site-foot a{color:var(--text-2);text-decoration:none}.site-foot a:hover{color:var(--primary)}
+@media(max-width:720px){.header{padding:10px 16px}.tool-nav{order:3;flex-basis:100%;overflow-x:auto;margin:0 -4px;padding-bottom:2px}.brand{margin-right:auto}.page{padding:0 16px}.page-head{padding-top:24px}.card{padding:18px}.site-foot{padding:14px 16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+/* 10. JSON tree (colored, foldable; used by Native Logs and JSON Viewer) */
+:root,[data-theme=dark]{--jkey:#5fc7d8;--jstr:#8fcf80;--jnum:#f0a86a}
+[data-theme=light]{--jkey:#0c7181;--jstr:#2c7437;--jnum:#9f5200}
+.jk{color:var(--jkey)}.js{color:var(--jstr)}.jv,.jb{color:var(--jnum)}.jn{color:var(--text-3);font-style:italic}.jp{color:var(--text-3)}
+.jrow{position:relative}
+.jc{padding-left:1.4em;margin-left:.15em;border-left:1px solid var(--line)}
+.jsum{display:none;color:var(--text-3);font-style:italic}
+.jrow.col>.jsum{display:inline}.jrow.col>.jc{display:none}
+.fold{position:absolute;left:-1.15em;top:.2em;width:1em;height:1.2em;padding:0;border:0;background:none;color:var(--text-3);font-size:11px;line-height:1;cursor:pointer;transition:transform .15s}
+.fold:hover{color:var(--primary)}.jrow.col>.fold{transform:rotate(-90deg)}
+.jmore{margin:2px 0 2px 1.4em;padding:2px 10px;border-radius:6px;border:1px solid var(--line-2);background:var(--raised);color:var(--primary);font:12px var(--mono);cursor:pointer}
+.jmore[hidden]{display:none}.jrow.col>.jmore{display:none}
+/* 11. added / removed colors (used by Text Compare; reuse for any diff view) */
+:root,[data-theme=dark]{--add-fg:#7fd88a;--add-bg:rgba(63,185,80,.14);--add-hi:rgba(63,185,80,.38);--del-fg:#f58b80;--del-bg:rgba(237,119,108,.14);--del-hi:rgba(237,119,108,.40)}
+[data-theme=light]{--add-fg:#1d7a2d;--add-bg:#e4f5e6;--add-hi:#b4e4bb;--del-fg:#b02a1d;--del-bg:#fce8e5;--del-hi:#f5bdb6}

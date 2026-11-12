@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Important links · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="links.css">
+</head>
+<body data-page="links">
+<script src="../../assets/js/site.js"></script>
+<main>
+  <div class="page page-head links-head">
+    <div><h1>Important links</h1><p>Search a name or note, or open a section below.</p></div>
+    <div id="searchContainer"><input type="text" id="searchBar" placeholder="Search links…" autocomplete="off" aria-label="Search links"><button type="button" id="clearButton">Clear</button></div>
+  </div>
+  <div id="container" class="page"></div>
+  <div class="page"><p id="noResults" hidden></p></div>
+</main>
+
+<div id="alert" class="alert" role="status" aria-live="polite"></div>
+<script src="../../data/links-data.js"></script>
+<script src="../../pages/links/links.js"></script>
+</body>
+</html>

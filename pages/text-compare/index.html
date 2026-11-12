@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Compare · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="text-compare.css">
+</head>
+<body data-page="compare">
+<script src="../../assets/js/site.js"></script>
+<main class="tc-main">
+
+  <section class="card tc-in" id="tcIn" aria-label="Text to compare">
+    <div class="tc-head">
+      <div><div class="card-title">Compare text</div><div class="tc-sub">Nothing is uploaded or saved. It all stays in your browser.</div></div>
+      <div class="tc-tools">
+        <button type="button" class="btn sm" id="tcSample">Sample</button>
+        <button type="button" class="btn sm" id="tcSwap" title="Swap the two sides">Swap sides</button>
+        <button type="button" class="btn sm" id="tcClearAll">Clear all</button>
+      </div>
+    </div>
+
+    <div class="tc-panes">
+      <div class="tc-pane" id="paneA">
+        <div class="tc-phead">
+          <label for="tcA">Original</label>
+          <span class="tc-count" id="countA">0 lines</span>
+          <span class="tc-ptools">
+            <button type="button" class="link-btn" id="loadA">Load file</button>
+            <button type="button" class="link-btn" id="pasteA">Paste</button>
+            <button type="button" class="link-btn" id="clearA">Clear</button>
+            <input type="file" id="fileA" hidden>
+          </span>
+        </div>
+        <div class="tc-drop"><textarea id="tcA" spellcheck="false" autocomplete="off" placeholder="Paste the original text here, or drop a file…"></textarea><div class="tc-over">Drop the file to load it</div></div>
+      </div>
+      <div class="tc-pane" id="paneB">
+        <div class="tc-phead">
+          <label for="tcB">Changed</label>
+          <span class="tc-count" id="countB">0 lines</span>
+          <span class="tc-ptools">
+            <button type="button" class="link-btn" id="loadB">Load file</button>
+            <button type="button" class="link-btn" id="pasteB">Paste</button>
+            <button type="button" class="link-btn" id="clearB">Clear</button>
+            <input type="file" id="fileB" hidden>
+          </span>
+        </div>
+        <div class="tc-drop"><textarea id="tcB" spellcheck="false" autocomplete="off" placeholder="Paste the changed text here, or drop a file…"></textarea><div class="tc-over">Drop the file to load it</div></div>
+      </div>
+    </div>
+
+    <div class="tc-act">
+      <button type="button" class="btn primary" id="tcCompare" title="Compare (Ctrl+Enter)">Compare</button>
+      <label class="tc-opt" title="Compare again automatically while you type or paste"><input type="checkbox" id="optLive"><span>Compare as I type</span></label>
+      <span class="tc-hint">Tip: drop two files at once to load both sides.</span>
+    </div>
+  </section>
+
+  <section class="card tc-out" id="tcOut" aria-label="Result">
+    <div class="tc-bar">
+      <div class="tc-stats" id="tcStats" aria-live="polite"></div>
+      <div class="tc-tools">
+        <div class="tc-tabs" role="tablist" aria-label="View">
+          <button type="button" id="viewSide" role="tab" aria-selected="true" class="on">Side by side</button>
+          <button type="button" id="viewInline" role="tab" aria-selected="false">Inline</button>
+        </div>
+        <div class="tc-nav">
+          <button type="button" class="btn sm" id="tcPrev" title="Previous difference (Alt + ↑)" aria-label="Previous difference" disabled>↑</button>
+          <span class="tc-pos" id="tcPos" aria-live="polite"></span>
+          <button type="button" class="btn sm" id="tcNext" title="Next difference (Alt + ↓)" aria-label="Next difference" disabled>↓</button>
+        </div>
+        <button type="button" class="btn sm" id="tcCopy" disabled title="Copy the result as a standard diff">Copy diff</button>
+        <button type="button" class="btn sm" id="tcDl" disabled title="Save the result as a .diff file">Download .diff</button>
+        <button type="button" class="btn sm" id="tcHide" title="Hide the text boxes to see more of the result">Hide text boxes</button>
+      </div>
+    </div>
+    <div class="tc-opts" role="group" aria-label="Options">
+      <label class="tc-opt" title="Treat A and a as the same"><input type="checkbox" id="optCase"><span>Ignore case</span></label>
+      <label class="tc-opt" title="Ignore indents, trailing spaces and extra spaces between words"><input type="checkbox" id="optSpace"><span>Ignore spacing</span></label>
+      <label class="tc-opt" title="Skip empty lines on both sides"><input type="checkbox" id="optBlank"><span>Ignore blank lines</span></label>
+      <label class="tc-opt" title="If a side is valid JSON, format it first so only real differences show"><input type="checkbox" id="optJson"><span>Format JSON first</span></label>
+      <label class="tc-opt" title="Hide unchanged lines, keeping 3 lines around each change"><input type="checkbox" id="optOnly"><span>Only differences</span></label>
+      <label class="tc-opt" title="Wrap long lines instead of scrolling sideways"><input type="checkbox" id="optWrap"><span>Wrap long lines</span></label>
+      <label class="tc-opt tc-sel-l"><span>Highlight inside lines</span>
+        <select id="selMark" class="tc-sel" aria-label="Highlight inside lines"><option value="word">Words</option><option value="char">Characters</option><option value="off">Off</option></select>
+      </label>
+    </div>
+    <div class="tc-note" id="tcNote" hidden></div>
+    <div class="tc-body" id="tcBody"></div>
+  </section>
+
+</main>
+<div id="alert" class="alert" role="status" aria-live="polite"></div>
+<script src="text-compare.js"></script>
+</body>
+</html>

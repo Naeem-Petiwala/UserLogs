@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Native Logs · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="native-logs.css">
+</head>
+<body data-page="native-logs" class="nlpage">
+<script src="../../assets/js/site.js"></script>
+<main class="nl">
+  <aside class="card nl-side">
+    <form id="nlForm" autocomplete="off" onsubmit="return false" aria-label="Search details">
+      <div class="card-title">Search <span class="pill" id="nlEnvTxt">Live service</span></div>
+      <div class="field"><div class="label-row"><span class="label">Service</span></div>
+        <label class="segmented" for="nlLive"><input type="checkbox" id="nlLive" checked><span class="seg seg-live">Live</span><span class="seg seg-local">Local</span></label></div>
+      <div class="field">
+        <div class="label-row"><label for="param1">Client</label><button type="button" id="customClientBtn" class="link-btn">Enter a custom client ID</button></div>
+        <div id="customClientInput" class="hidden"><input type="text" id="customClientField" placeholder="e.g. USV" autocomplete="off" style="text-transform:uppercase"></div>
+        <div id="dropdownClientInput"><select id="param1"></select></div>
+      </div>
+      <div class="field"><div class="label-row"><label for="nlRep">Repcode</label></div><input type="text" id="nlRep" placeholder="e.g. P0047" autocomplete="off" style="font-family:var(--mono);text-transform:uppercase"></div>
+      <div class="field"><div class="label-row"><label for="nlType">Type</label></div><select id="nlType"></select></div>
+      <div class="field"><div class="label-row"><label for="nlDate">Date</label></div>
+        <div class="with-steps"><button type="button" class="step-btn" id="prevDay" aria-label="Previous day">←</button><input type="date" id="nlDate"><button type="button" class="step-btn" id="nextDay" aria-label="Next day">→</button></div></div>
+      <div class="field"><div class="label-row"><label for="nlModule">Module <span style="color:var(--text-3)">(optional)</span></label></div>
+        <div class="combo"><input type="text" id="nlModule" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="modList" placeholder="Pick a client first" autocomplete="off"><button type="button" class="combo-x" id="modClear" aria-label="Clear module" hidden>×</button></div></div>
+      <div class="nl-act"><button type="button" class="btn primary" id="show" aria-disabled="true">Show logs</button><span class="nl-hint" id="hint"></span></div>
+      <div class="nl-err" id="nlErr" role="alert" hidden></div>
+    </form>
+  </aside>
+  <section class="card nl-main" id="results" aria-live="polite"></section>
+</main>
+<div class="combo-list" id="modList" role="listbox" hidden></div>
+
+<div id="alert" class="alert" role="status" aria-live="polite"></div>
+<script src="../../data/config.js"></script>
+<script src="../../pages/native-logs/native-logs.js"></script>
+</body>
+</html>

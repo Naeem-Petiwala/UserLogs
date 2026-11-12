@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Script Viewer · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="sql.css">
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/sql-wasm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+</head>
+<body data-page="sql">
+<script src="../../assets/js/site.js"></script>
+<main>
+  <div class="page-title"><h1>SQL Zip to SQLite</h1><small>Fetch, unzip, run, explore, export</small><span class="sp"></span><button class="g" id="clear">Clear</button></div>
+  <section class="card pad" id="inp">
+    <div class="row">
+      <input type="text" id="url" placeholder="Paste a link, or drop a .cpz / .zip / .sql / .db file anywhere on this page">
+      <button id="go">Fetch &amp; build</button>
+      <label class="btn">Choose file<input type="file" id="file" hidden></label>
+    </div>
+    <div class="msg" id="msg">Loading SQLite engine…</div>
+  </section>
+
+  <section class="card pad" id="rep" hidden>
+    <div class="chips" id="chips"></div>
+    <details class="errs" id="errd" hidden><summary id="errs"></summary><div class="elist" id="elist"></div><button class="g" id="elog" hidden style="margin-top:8px">Download full error log (.txt)</button></details>
+  </section>
+
+  <section id="ws" hidden>
+    <aside class="card">
+      <div class="top">
+        <input type="search" id="ts" placeholder="Search tables…">
+        <label class="opts"><span><input type="checkbox" id="hz"> Hide empty tables</span><span id="tc"></span></label>
+        <div class="opts"><span>Sort</span><select id="so"><option value="name">Name</option><option value="rows">Most rows</option></select></div>
+      </div>
+      <div id="tl"></div>
+    </aside>
+    <div class="card" id="pane" style="min-width:0">
+      <div class="tools">
+        <div class="seg"><button id="tabd" class="on">Data</button><button id="tabs">SQL script</button></div>
+        <button id="dldb">Download .db</button>
+        <button class="g" id="dlsql">Download .sql</button>
+        <span class="sp"></span>
+        <span id="tip" style="color:var(--mu);font-size:12.5px">Cmd/Ctrl + Enter runs the query · Ctrl + Space shows suggestions</span>
+      </div>
+      <div id="vdata">
+        <div class="qrow">
+          <textarea id="q" spellcheck="false" placeholder="SELECT * FROM table_name;"></textarea>
+          <div class="qside"><button id="run">Run query</button><span id="qi"></span></div>
+        </div>
+        <div id="out"><div class="empty">Pick a table on the left to see its data.</div></div>
+      </div>
+      <div id="vsql" hidden>
+        <div class="sqlbar">
+          <input type="search" id="sq" placeholder="Find in script… (Enter = next, Shift+Enter = previous)">
+          <button class="g" id="sp">Prev</button><button class="g" id="sn">Next</button><span class="mu" id="sc"></span>
+          <span class="sp"></span><span class="mu" id="sinfo"></span>
+          <label class="mu wrapl"><input type="checkbox" id="wr"> Wrap lines</label>
+          <button class="g" id="scp">Copy all</button>
+        </div>
+        <div id="sv"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const BASE = "https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/";
+let SQL, db, sqlText = "", dbName = "output.db", sqlName = "output.sql", tables = [], active = "";
+let cols = [], rows = [], shown = 0, view = null, baseInfo = "";   // view = row numbers that pass the column filters (null = all rows)
+const CHUNK = 300;
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cell = v => v === null ? '<i class="nl">NULL</i>' : ArrayBuffer.isView(v) ? `<i class="nl">[BLOB ${v.byteLength} B]</i>` : esc(v);
+const say = (t, c) => { $("msg").textContent = t; $("msg").className = "msg " + (c || ""); };
+const tick = () => new Promise(r => setTimeout(r));
+
+async function init() {
+  try { SQL = await initSqlJs({ locateFile: f => BASE + f }); say("Ready. Paste a link or drop a file.", "ok"); }
+  catch (e) { say("Could not load SQLite engine (internet needed): " + e.message, "er"); }
+}
+
+function baseOf(s) { return ((s.split("?")[0].split("/").pop() || "output").replace(/\.[^.]*$/, "")) || "output"; }
+
+function trigDone(t) {
+  const c = t.replace(/'(?:[^']|'')*'|"(?:[^"]|"")*"|--[^\n]*|\/\*[\s\S]*?\*\//g, " ");
+  if (!/\bEND\s*$/i.test(c)) return false;
+  return (c.match(/\bEND\b/gi) || []).length >= (c.match(/\bCASE\b/gi) || []).length + 1;
+}
+
+/* Splits a SQL script into statements. Respects quotes, comments and CREATE TRIGGER ... END blocks. */
+function splitSQL(s) {
+  const out = [], n = s.length; let i = 0, st = 0;
+  const isTrig = t => /^(?:\s|--[^\n]*\n|\/\*[\s\S]*?\*\/)*CREATE\s+(?:TEMP(?:ORARY)?\s+)?TRIGGER\b/i.test(t);
+  while (i < n) {
+    const c = s[i], d = s[i + 1];
+    if (c === "'" || c === '"' || c === "`") {
+      let j = i + 1;
+      while (j < n) { if (s[j] === c) { if (s[j + 1] === c) { j += 2; continue; } break; } j++; }
+      i = j + 1; continue;
+    }
+    if (c === "[") { const j = s.indexOf("]", i); i = j < 0 ? n : j + 1; continue; }
+    if (c === "-" && d === "-") { const j = s.indexOf("\n", i); i = j < 0 ? n : j; continue; }
+    if (c === "/" && d === "*") { const j = s.indexOf("*/", i + 2); i = j < 0 ? n : j + 2; continue; }
+    if (c === ";") {
+      const cur = s.slice(st, i);
+      if (isTrig(cur) && !trigDone(cur)) { i++; continue; }
+      if (cur.trim()) out.push(cur.trim());
+      st = ++i; continue;
+    }
+    i++;
+  }
+  if (s.slice(st).trim()) out.push(s.slice(st).trim());
+  return out;
+}
+
+const qid = n => '"' + String(n).replace(/"/g, '""') + '"';
+
+function decodeText(u) {
+  if (u[0] === 0xFF && u[1] === 0xFE) return { t: new TextDecoder("utf-16le").decode(u.subarray(2)), n: "UTF-16 text detected." };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { t: new TextDecoder("utf-16be").decode(u.subarray(2)), n: "UTF-16 text detected." };
+  try { return { t: new TextDecoder("utf-8", { fatal: true }).decode(u), n: "" }; }
+  catch (_) { return { t: new TextDecoder("windows-1252").decode(u), n: "Not valid UTF-8, so it was read as Windows-1252. Check accented characters." }; }
+}
+
+let allErrors = [], srcIsDb = false, dumpStale = false;
+
+const isSqliteDb = u => u.length >= 16 && String.fromCharCode(...u.subarray(0, 15)) === "SQLite format 3";
+function looksBinary(u) {
+  if ((u[0] === 0xFF && u[1] === 0xFE) || (u[0] === 0xFE && u[1] === 0xFF)) return false;
+  const n = Math.min(u.length, 4000);
+  for (let i = 0; i < n; i++) if (u[i] === 0) return true;
+  return false;
+}
+
+function sqlLit(v) {          // big-integer mode: integer = BigInt, real = number
+  if (v === null || v === undefined) return "NULL";
+  if (typeof v === "bigint") return String(v);
+  if (typeof v === "number") {
+    if (Number.isNaN(v)) return "NULL";
+    if (!Number.isFinite(v)) return v > 0 ? "9e999" : "-9e999";
+    if (Object.is(v, -0)) return "-0.0";
+    const t = String(v); return /[.e]/.test(t) ? t : t + ".0";
+  }
+  if (ArrayBuffer.isView(v)) return "X'" + Array.from(new Uint8Array(v.buffer, v.byteOffset, v.byteLength), b => b.toString(16).padStart(2, "0")).join("") + "'";
+  return "'" + String(v).replace(/'/g, "''") + "'";
+}
+
+/* Builds a .sql script (schema + data) from the open database. */
+function dumpDb() {
+  const LIMIT = 25 * 1024 * 1024, out = ["BEGIN TRANSACTION;"], cut = [];
+  const r = db.exec("SELECT type, name, sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' ORDER BY rowid");
+  const objs = r.length ? r[0].values : [];
+  const tabs = objs.filter(o => o[0] === "table"), rest = objs.filter(o => o[0] !== "table");
+  tabs.forEach(o => out.push(o[2] + ";"));
+  let size = 0;
+  for (const [, name] of tabs) {
+    const st = db.prepare(`SELECT * FROM ${qid(name)}`);
+    while (st.step()) {
+      const line = `INSERT INTO ${qid(name)} VALUES(${st.get(null, { useBigInt: true }).map(sqlLit).join(",")});`;
+      out.push(line); size += line.length;
+      if (size > LIMIT) { cut.push(name); break; }
+    }
+    st.free();
+    if (size > LIMIT) { if (!cut.includes(name)) cut.push(name); break; }
+  }
+  rest.forEach(o => out.push(o[2] + ";"));
+  out.push("COMMIT;");
+  if (cut.length) out.unshift(`-- NOTE: data was cut off after about 25 MB (stopped in table ${cut[cut.length - 1]}). Use Download .db for the full data.`);
+  return out.join("\n") + "\n";
+}
+function ensureSql() {
+  if (!srcIsDb || !dumpStale || !db) return;
+  sqlText = dumpDb(); dumpStale = false; prepSql();
+}
+
+function openDbFile(u, name, note) {
+  db = new SQL.Database(u);
+  try { db.exec("SELECT count(*) FROM sqlite_master"); }   // throws if this is not a valid database
+  catch (e) { db.close(); db = null; throw e; }
+  srcIsDb = true; dumpStale = true; sqlText = "";
+  dbName = baseOf(name) + ".db"; sqlName = baseOf(name) + ".sql";
+  allErrors = []; errLines = new Set(); sqlLines = []; sqlLoaded = 0; $("sv").innerHTML = "";
+  loadTables(); showTab("data");
+  $("rep").hidden = false; $("errd").hidden = true; $("elog").hidden = true;
+  $("chips").innerHTML = `<span class="chip ok">Opened .db file</span><span class="chip">${tables.length} table(s)/view(s)</span><span class="chip">${(u.length / 1024).toFixed(1)} KB</span>`;
+  say("Opened the database file. The SQL script tab shows a script generated from it." + note, "ok");
+}
+async function build(buf, name) {
+  if (!SQL) return say("SQLite engine not loaded yet.", "er");
+  if (db) { db.close(); db = null; }
+  sqlText = ""; tables = []; rows = []; active = ""; srcIsDb = false; dumpStale = false;
+  $("rep").hidden = true; $("ws").hidden = true;
+  try {
+    say("Reading file…");
+    const notes = [], parts = [];
+    if (isSqliteDb(buf)) return openDbFile(buf, name, "");
+    if (buf[0] === 0x50 && buf[1] === 0x4B) {
+      const files = fflate.unzipSync(buf);
+      const names = Object.keys(files).filter(n => !n.endsWith("/") && !n.startsWith("__MACOSX") && !n.split("/").pop().startsWith("._"));
+      if (!names.length) throw new Error("Zip is empty");
+      let sqls = names.filter(n => /\.sql$/i.test(n)).sort();
+      if (!sqls.length) {
+        const dbn = names.find(n => isSqliteDb(files[n]));
+        if (dbn) return openDbFile(files[dbn], dbn, ` (found inside the zip: ${dbn})`);
+        sqls = [names[0]]; notes.push(`No .sql file inside, used ${names[0]}.`);
+      }
+      for (const n of sqls) { const d = decodeText(files[n]); parts.push(d.t.replace(/^\uFEFF/, "")); if (d.n) notes.push(d.n); }
+      if (sqls.length > 1) notes.push(`Ran ${sqls.length} .sql files in name order: ${sqls.join(", ")}.`);
+      sqlName = (sqls.length === 1 ? sqls[0].split("/").pop().replace(/\.[^.]*$/, "") : baseOf(name)) + ".sql";
+    } else {
+      if (looksBinary(buf)) throw new Error("This file is binary, but it is not a zip or a SQLite database, so it cannot be read as SQL text.");
+      const d = decodeText(buf); parts.push(d.t.replace(/^\uFEFF/, "")); if (d.n) notes.push(d.n);
+      sqlName = baseOf(name) + ".sql";
+    }
+    sqlText = parts.join("\n;\n");
+    dbName = baseOf(name) + ".db";
+    const stmts = splitSQL(sqlText);
+    if (!stmts.length) throw new Error("No SQL statements found in this file.");
+    db = new SQL.Database();
+    const errors = [];
+    let ok = 0, t0 = performance.now();
+    for (let k = 0; k < stmts.length; k++) {
+      try { db.run(stmts[k]); ok++; }
+      catch (e) { errors.push({ n: k + 1, msg: e.message, sql: stmts[k] }); }
+      if (k % 400 === 0) { say(`Running statement ${k + 1} of ${stmts.length}…`); await tick(); }
+    }
+    locate(stmts, errors);
+    report(stmts.length, ok, errors, Math.round(performance.now() - t0));
+    prepSql(); showTab("data");
+    loadTables();
+    say((errors.length ? "Finished with some failed statements (see report below)." : "Finished. All statements ran.") + (notes.length ? " " + notes.join(" ") : ""), errors.length ? "er" : "ok");
+  } catch (e) { say("Failed: " + e.message, "er"); }
+}
+
+function report(total, ok, errors, ms) {
+  allErrors = errors;
+  $("rep").hidden = false;
+  $("chips").innerHTML =
+    `<span class="chip">${total} statements</span><span class="chip ok">${ok} succeeded</span>` +
+    `<span class="chip ${errors.length ? "er" : ""}">${errors.length} failed</span><span class="chip">${ms} ms</span>`;
+  $("errd").hidden = !errors.length; $("errd").open = false;
+  const cap = 200;
+  $("errs").textContent = `${errors.length} statement(s) failed and were skipped` + (errors.length > cap ? ` (showing first ${cap})` : "");
+  $("elist").innerHTML = errors.slice(0, cap).map(e =>
+    `<div class="eitem"><b>#${e.n}</b> ${esc(e.msg)}${e.line ? ` <button class="g lk" data-line="${e.line}">View in script (line ${e.line})</button>` : ""}<code>${esc(e.sql.length > 300 ? e.sql.slice(0, 300) + " …" : e.sql)}</code></div>`).join("");
+  $("elog").hidden = errors.length <= cap;
+}
+
+function readTables() {
+  colCache.clear();
+  const r = db.exec("SELECT name, type FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' ORDER BY name");
+  tables = (r.length ? r[0].values : []).map(([name, type]) => {
+    let count = 0; try { count = db.exec(`SELECT COUNT(*) FROM ${qid(name)}`)[0].values[0][0]; } catch (_) {}
+    return { name, type, count };
+  });
+}
+
+function loadTables() {
+  readTables();
+  $("ws").hidden = false;
+  active = ""; renderTables();
+  const first = tables.find(t => t.count > 0) || tables[0];
+  if (first) openTable(first.name);
+}
+
+function renderTables() {
+  const f = $("ts").value.trim().toLowerCase(), hz = $("hz").checked;
+  let list = tables.filter(t => (!f || t.name.toLowerCase().includes(f)) && (!hz || t.count > 0));
+  if ($("so").value === "rows") list.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  $("tc").textContent = `${list.length} of ${tables.length}`;
+  $("tl").innerHTML = list.map(t =>
+    `<button class="ti ${t.name === active ? "act" : ""} ${t.count ? "" : "z"}" data-t="${esc(t.name)}"><span>${esc(t.name)}${t.type === "view" ? " <small>view</small>" : ""}</span><span class="n">${t.count}</span></button>`).join("")
+    || '<div class="empty">No tables match.</div>';
+}
+
+function openTable(name) {
+  active = name; renderTables();
+  $("q").value = `SELECT * FROM ${qid(name)};`;
+  runQuery();
+}
+
+const SKIP = "(?:\\s|--[^\\n]*\\n|\\/\\*[\\s\\S]*?\\*\\/)*";
+const READ_RE = new RegExp("^" + SKIP + "(SELECT|EXPLAIN)\\b", "i");
+const isRead = x => READ_RE.test(x) ||
+  (/^\s*WITH\b/i.test(x) && !/\b(insert|update|delete|replace)\b/i.test(x)) ||
+  (/^\s*PRAGMA\b/i.test(x) && !/=/.test(x));
+const isModifying = sql => splitSQL(sql).some(x => !isRead(x));
+function targetTable(sql) {
+  const re = /(?:insert\s+(?:or\s+\w+\s+)?into|replace\s+into|update(?:\s+or\s+\w+)?|delete\s+from|create\s+(?:temp(?:orary)?\s+)?table(?:\s+if\s+not\s+exists)?|alter\s+table)\s+(?:(?:main|temp)\s*\.\s*)?["`\[]?([\w$]+)/ig;
+  let m, last = null; while ((m = re.exec(sql))) last = m[1];
+  return last;
+}
+
+function showErr(msg) {
+  $("out").innerHTML = `<div class="empty" style="color:var(--er)">${esc(msg)}</div>`;
+  $("qi").textContent = "";
+}
+
+function render(x, info) {
+  cols = x.columns; rows = x.values; shown = 0; view = null; baseInfo = info;
+  const tip = "Type to filter (contains). Start with = for an exact match, ! to exclude, or > < >= <= to compare numbers.";
+  $("out").innerHTML = "<table><thead><tr><th>#</th>" + cols.map(c => `<th>${esc(c)}</th>`).join("") + "</tr>" +
+    `<tr class="filters"><th><button class="g fx" id="fclear" title="Clear all filters" hidden>×</button></th>` +
+    cols.map((c, i) => `<th><input type="search" class="fi" data-c="${i}" placeholder="Filter" title="${tip}" autocomplete="off" spellcheck="false" aria-label="Filter ${esc(c)}"></th>`).join("") + "</tr></thead><tbody></tbody></table>";
+  $("out").scrollTop = 0;
+  more();
+  $("qi").textContent = `${rows.length} row(s) · ${info}`;
+}
+
+function runQuery() {
+  const sql = $("q").value, mod = isModifying(sql), t0 = performance.now();
+  let res = [], err = null;
+  try { res = db.exec(sql, null, { useBigInt: true }); } catch (e) { err = e; }
+  const ms = Math.round(performance.now() - t0) + " ms";
+  if (mod) {
+    dumpStale = true;
+    const aff = /\b(insert|update|delete|replace)\b/i.test(sql) ? `${db.getRowsModified()} row(s) affected` : "Done";
+    readTables();
+    const tg = targetTable(sql);
+    const hit = tg && tables.find(t => t.name.toLowerCase() === tg.toLowerCase());
+    if (hit) active = hit.name; else if (!tables.some(t => t.name === active)) active = "";
+    renderTables();
+    if (err) return showErr(err.message + " (statements before the error were applied)");
+    if (!res.length) {
+      if (active) { render(db.exec(`SELECT * FROM ${qid(active)}`, null, { useBigInt: true })[0] || { columns: [], values: [] }, `${aff} · showing ${active}`); }
+      else { $("out").innerHTML = '<div class="empty">Done. Pick a table on the left.</div>'; $("qi").textContent = `${aff} · ${ms}`; }
+      return;
+    }
+  } else if (err) return showErr(err.message);
+  if (!res.length) { $("out").innerHTML = '<div class="empty">Query ran. No rows returned.</div>'; $("qi").textContent = ms; return; }
+  render(res[res.length - 1], ms);
+}
+
+function more() {
+  const body = $("out").querySelector("tbody"); if (!body) return;
+  const end = Math.min(shown + CHUNK, count());
+  let h = "";
+  for (let k = shown; k < end; k++) { const i = view ? view[k] : k; h += `<tr><td class="rn">${i + 1}</td>` + rows[i].map(v => `<td>${cell(v)}</td>`).join("") + "</tr>"; }
+  body.insertAdjacentHTML("beforeend", h); shown = end;
+  const o = $("out");
+  if (shown < count() && o.clientHeight > 0 && o.scrollHeight <= o.clientHeight) more();
+}
+
+/* ---- filter row under the column headers ---- */
+const count = () => view ? view.length : rows.length;
+const cellText = v => v === null ? "NULL" : ArrayBuffer.isView(v) ? `[BLOB ${v.byteLength} B]` : String(v);
+function matcher(raw) {
+  const m = raw.trim().match(/^(>=|<=|>|<|=|!)?\s*([\s\S]*)$/), op = m[1] || "", t = m[2].toLowerCase();
+  if (!op && !t) return null;
+  if (op === "=") return v => cellText(v).toLowerCase() === t;
+  if (!t) return null;                                   // "!", ">" ... with nothing after them: not filtering yet
+  if (op === "!") return v => !cellText(v).toLowerCase().includes(t);
+  if (op) {
+    const n = Number(t);
+    return v => {
+      const a = cellText(v), x = Number(a);
+      if (a !== "" && !isNaN(n) && !isNaN(x)) return op === ">" ? x > n : op === "<" ? x < n : op === ">=" ? x >= n : x <= n;
+      const b = a.toLowerCase(); return op === ">" ? b > t : op === "<" ? b < t : op === ">=" ? b >= t : b <= t;
+    };
+  }
+  return v => cellText(v).toLowerCase().includes(t);
+}
+function applyFilters() {
+  const o = $("out"), tb = o.querySelector("tbody"); if (!tb) return;
+  const ms = [...o.querySelectorAll(".fi")].map(i => matcher(i.value)), on = ms.some(Boolean);
+  view = on ? rows.reduce((a, r, i) => { if (ms.every((f, c) => !f || f(r[c]))) a.push(i); return a; }, []) : null;
+  shown = 0; tb.innerHTML = ""; o.scrollTop = 0; more();
+  if (on && !view.length) tb.innerHTML = `<tr><td colspan="${cols.length + 1}" class="empty">No rows match these filters.</td></tr>`;
+  $("fclear").hidden = !on;
+  $("qi").textContent = on ? `${view.length} of ${rows.length} row(s) shown · ${baseInfo}` : `${rows.length} row(s) · ${baseInfo}`;
+}
+let fTimer;
+$("out").addEventListener("input", e => { if (e.target.classList.contains("fi")) { clearTimeout(fTimer); fTimer = setTimeout(applyFilters, 200); } });
+$("out").addEventListener("click", e => { if (e.target.id === "fclear") { $("out").querySelectorAll(".fi").forEach(i => (i.value = "")); applyFilters(); } });
+
+function save(data, name, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function clearAll() {
+  colCache.clear(); acClose();
+  if (db) db.close(); db = null; sqlText = ""; tables = []; rows = []; cols = []; srcIsDb = false; dumpStale = false;
+  $("url").value = ""; $("file").value = ""; $("q").value = ""; $("ts").value = ""; $("hz").checked = false;
+  $("rep").hidden = true; $("ws").hidden = true; $("out").innerHTML = ""; $("qi").textContent = "";
+  sqlLines = []; sqlLoaded = 0; errLines = new Set(); $("sv").innerHTML = ""; curQ = ""; hits = []; hitIdx = -1; markedLines = new Set(); $("sq").value = ""; $("sc").textContent = ""; showTab("data");
+  say(SQL ? "Cleared. Ready for a new file." : "Loading SQLite engine…", SQL ? "ok" : "");
+}
+
+async function fromUrl() {
+  const url = $("url").value.trim(); if (!url) return;
+  $("go").disabled = true; say("Downloading…");
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error("Server replied " + r.status);
+    await build(new Uint8Array(await r.arrayBuffer()), url);
+  } catch (e) {
+    say("The browser could not download this link (" + e.message + "). It is probably blocked by CORS. Download the file normally and drop it in the box above.", "er");
+  }
+  $("go").disabled = false;
+}
+async function fromFile(f) { if (f) await build(new Uint8Array(await f.arrayBuffer()), f.name); }
+
+$("go").onclick = fromUrl;
+$("url").addEventListener("keydown", e => e.key === "Enter" && fromUrl());
+$("file").onchange = e => fromFile(e.target.files[0]);
+$("clear").onclick = clearAll;
+$("elog").onclick = () => save(allErrors.map(e => `#${e.n}${e.line ? " (line " + e.line + ")" : ""}: ${e.msg}\n${e.sql}\n`).join("\n"), "errors.txt", "text/plain");
+$("run").onclick = runQuery;
+$("q").addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") runQuery(); });
+$("dldb").onclick = () => db && save(db.export(), dbName, "application/octet-stream");
+$("dlsql").onclick = () => { ensureSql(); if (sqlText) save(sqlText, sqlName, "text/plain"); };
+$("ts").oninput = renderTables; $("hz").onchange = renderTables; $("so").onchange = renderTables;
+$("tl").onclick = e => { const b = e.target.closest(".ti"); if (b) openTable(b.dataset.t); };
+$("out").addEventListener("scroll", e => { const o = e.target; if (shown < count() && o.scrollTop + o.clientHeight >= o.scrollHeight - 250) more(); });
+const inp = $("inp");
+["dragenter", "dragover"].forEach(v => document.addEventListener(v, e => { e.preventDefault(); inp.classList.add("over"); }));
+document.addEventListener("dragleave", e => { if (!e.relatedTarget) inp.classList.remove("over"); });
+document.addEventListener("drop", e => { e.preventDefault(); inp.classList.remove("over"); fromFile(e.dataTransfer.files[0]); });
+/* ---------- SQL script viewer ---------- */
+let sqlLines = [], sqlLoaded = 0, errLines = new Set(), hits = [], hitIdx = -1;
+const SQL_CHUNK = 800, MAXLEN = 20000;
+let curQ = "", markedLines = new Set(), foundLines = 0, capped = false;
+
+function locate(stmts, errors) {
+  errLines = new Set();
+  if (!errors.length) return;
+  const want = new Map(errors.map(e => [e.n - 1, e])), last = errors[errors.length - 1].n - 1;
+  let pos = 0, prev = 0, ln = 1;
+  for (let k = 0; k <= last; k++) {
+    const at = sqlText.indexOf(stmts[k], pos); if (at < 0) continue;
+    for (let j = sqlText.indexOf("\n", prev); j !== -1 && j < at; j = sqlText.indexOf("\n", j + 1)) ln++;
+    prev = at; pos = at + stmts[k].length;
+    const e = want.get(k);
+    if (e) {
+      let end = ln;
+      for (let j = sqlText.indexOf("\n", at); j !== -1 && j < pos && end - ln < 2000; j = sqlText.indexOf("\n", j + 1)) end++;
+      e.line = ln; for (let x = ln; x <= end; x++) errLines.add(x);
+    }
+  }
+}
+
+function prepSql() {
+  sqlLines = sqlText.split("\n"); sqlLoaded = 0; hits = []; hitIdx = -1; curQ = ""; markedLines = new Set();
+  $("sv").innerHTML = ""; $("sq").value = ""; $("sc").textContent = "";
+  $("sinfo").textContent = `${sqlLines.length.toLocaleString()} lines · ${(sqlText.length / 1024).toFixed(1)} KB` + (srcIsDb ? " · generated from the .db" : "");
+}
+
+const escw = x => esc(x).replace(/,/g, ",<wbr>");
+function markText(t) {
+  if (!curQ) return escw(t);
+  const lo = t.toLowerCase(); if (lo.length !== t.length) return escw(t);
+  let out = "", p = 0, at;
+  while ((at = lo.indexOf(curQ, p)) !== -1) { out += escw(t.slice(p, at)) + "<mark>" + escw(t.slice(at, at + curQ.length)) + "</mark>"; p = at + curQ.length; }
+  return out + escw(t.slice(p));
+}
+function lineInner(i) {
+  let t = sqlLines[i].replace(/\r$/, ""), extra = "";
+  if (t.length > MAXLEN) { extra = ` … (${t.length - MAXLEN} more characters hidden, use Download .sql)`; t = t.slice(0, MAXLEN); }
+  return markText(t) + esc(extra);
+}
+function lineHtml(i) { return `<div class="ln${errLines.has(i + 1) ? " err" : ""}" data-n="${i + 1}">${lineInner(i)}</div>`; }
+function refreshLine(n) { if (n > sqlLoaded) return; const el = $("sv").children[n - 1]; if (el) el.innerHTML = lineInner(n - 1); }
+
+function moreSql(upTo) {
+  const end = Math.min(Math.max(sqlLoaded + SQL_CHUNK, upTo || 0), sqlLines.length);
+  let h = ""; for (let i = sqlLoaded; i < end; i++) h += lineHtml(i);
+  $("sv").insertAdjacentHTML("beforeend", h); sqlLoaded = end;
+  const o = $("sv");
+  if (sqlLoaded < sqlLines.length && o.clientHeight > 0 && o.scrollHeight <= o.clientHeight) moreSql();
+}
+
+function reveal(target, horizontal) {
+  const v = $("sv"); v.style.paddingBottom = "";
+  const vr = v.getBoundingClientRect(), tr = target.getBoundingClientRect();
+  const want = Math.max(0, v.scrollTop + (tr.top - vr.top) - v.clientHeight / 3);
+  if (v.scrollHeight > v.clientHeight && want > v.scrollHeight - v.clientHeight)
+    v.style.paddingBottom = Math.ceil(want - (v.scrollHeight - v.clientHeight) + 6) + "px";
+  v.scrollTop = want;
+  v.scrollLeft = horizontal && !v.classList.contains("wrap") ? Math.max(0, v.scrollLeft + (tr.left - vr.left) - v.clientWidth / 2) : 0;
+  // if the viewer is partly outside the browser window, scroll the page so all of it is visible
+  if ($("vsql").getBoundingClientRect().top < 70 || v.getBoundingClientRect().bottom > window.innerHeight)
+    $("vsql").scrollIntoView?.({ block: "start" });
+}
+function gotoLine(n, k) {
+  if (n > sqlLoaded) moreSql(n + 50);
+  const v = $("sv"), el = v.children[n - 1]; if (!el) return;
+  v.querySelector(".hit")?.classList.remove("hit"); el.classList.add("hit");
+  v.querySelector("mark.cur")?.classList.remove("cur");
+  const m = k == null ? null : el.querySelectorAll("mark")[k];
+  if (m) m.classList.add("cur");
+  reveal(m || el, !!m);
+}
+
+function clearSearch() {
+  const prev = [...markedLines]; curQ = ""; hits = []; hitIdx = -1; markedLines = new Set();
+  prev.forEach(refreshLine);
+  const old = $("sv").querySelector(".hit"); if (old) old.classList.remove("hit");
+  $("sc").textContent = "";
+}
+function runSearch() {
+  const raw = $("sq").value;
+  if (!raw) return clearSearch();
+  const prev = [...markedLines];
+  curQ = raw.toLowerCase(); hits = []; hitIdx = -1; markedLines = new Set(); foundLines = 0; capped = false;
+  const CAP = 50000;
+  outer: for (let i = 0; i < sqlLines.length; i++) {
+    const lo = sqlLines[i].toLowerCase(); let p = 0, at, k = 0;
+    while ((at = lo.indexOf(curQ, p)) !== -1) {
+      if (hits.length >= CAP) { capped = true; break outer; }
+      hits.push({ n: i + 1, k: k++ }); p = at + curQ.length;
+    }
+    if (k) { markedLines.add(i + 1); foundLines++; }
+  }
+  prev.forEach(refreshLine); markedLines.forEach(refreshLine);
+  const old = $("sv").querySelector(".hit"); if (old) old.classList.remove("hit");
+  if (!hits.length) { $("sc").textContent = "No match"; return; }
+  goHit(0);
+}
+function goHit(i) {
+  if (!hits.length) return;
+  hitIdx = (i + hits.length) % hits.length;
+  const h = hits[hitIdx];
+  gotoLine(h.n, h.k);
+  $("sc").textContent = `${hitIdx + 1} of ${hits.length.toLocaleString()}${capped ? "+" : ""} matches · ${foundLines.toLocaleString()} line(s)`;
+}
+function step(d) { if ($("sq").value.toLowerCase() !== curQ) runSearch(); else goHit(hitIdx + d); }
+
+function showTab(t) {
+  const sqlTab = t === "sql";
+  $("vdata").hidden = sqlTab; $("vsql").hidden = !sqlTab; $("tip").hidden = sqlTab;
+  $("tabd").classList.toggle("on", !sqlTab); $("tabs").classList.toggle("on", sqlTab);
+  if (sqlTab) ensureSql();
+  if (sqlTab && !sqlLoaded && sqlLines.length) moreSql();
+}
+
+$("tabd").onclick = () => showTab("data");
+$("tabs").onclick = () => showTab("sql");
+let searchTimer;
+const onSearchInput = () => { clearTimeout(searchTimer); if (!$("sq").value) clearSearch(); else searchTimer = setTimeout(runSearch, 200); };
+$("sq").addEventListener("input", onSearchInput); $("sq").addEventListener("search", onSearchInput);
+$("sq").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); step(e.shiftKey ? -1 : 1); } });
+$("sp").onclick = () => step(-1); $("sn").onclick = () => step(1);
+$("wr").onchange = () => { $("sv").classList.toggle("wrap", $("wr").checked); if (hits.length) goHit(hitIdx); };
+$("sv").addEventListener("scroll", e => { const o = e.target; if (sqlLoaded < sqlLines.length && o.scrollTop + o.clientHeight >= o.scrollHeight - 400) moreSql(); });
+$("elist").addEventListener("click", e => {
+  const b = e.target.closest("[data-line]"); if (!b) return;
+  showTab("sql"); gotoLine(+b.dataset.line);
+  $("vsql").scrollIntoView?.({ behavior: "smooth", block: "start" });
+});
+$("scp").onclick = async () => {
+  try { await navigator.clipboard.writeText(sqlText); }
+  catch (_) { const t = document.createElement("textarea"); t.value = sqlText; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+  $("scp").textContent = "Copied"; setTimeout(() => $("scp").textContent = "Copy all", 1200);
+};
+
+/* ---------- query box suggestions (autocomplete) ---------- */
+const colCache = new Map();
+const KW = ["SELECT","FROM","WHERE","GROUP BY","ORDER BY","HAVING","LIMIT","OFFSET","DISTINCT","AS","JOIN","LEFT JOIN","INNER JOIN","CROSS JOIN","ON","USING","UNION","UNION ALL","AND","OR","NOT","IN","NOT IN","LIKE","GLOB","BETWEEN","IS NULL","IS NOT NULL","EXISTS","CASE WHEN","THEN","ELSE","END","ASC","DESC","INSERT INTO","VALUES","UPDATE","SET","DELETE FROM","CREATE TABLE","CREATE INDEX","CREATE VIEW","DROP TABLE","DROP VIEW","DROP INDEX","ALTER TABLE","ADD COLUMN","RENAME TO","IF EXISTS","IF NOT EXISTS","PRIMARY KEY","AUTOINCREMENT","DEFAULT","NOT NULL","UNIQUE","REFERENCES","PRAGMA table_info(","EXPLAIN QUERY PLAN","BEGIN","COMMIT","ROLLBACK","VACUUM"];
+const FN = ["count","sum","avg","min","max","total","group_concat","abs","round","length","lower","upper","trim","ltrim","rtrim","substr","replace","instr","coalesce","ifnull","nullif","iif","typeof","cast","date","time","datetime","julianday","strftime","random","printf","hex","quote","json_extract","json_array_length"];
+const TABLE_KW = new Set(["FROM","JOIN","INTO","UPDATE","TABLE","EXISTS","VIEW"]);
+const RESERVED = new Set("select from where group order by limit table index key values set default check primary references unique join left right inner outer on as and or not null in is like between case when then else end create drop alter add column insert into update delete desc asc union all distinct having exists transaction view trigger".split(" "));
+const needsQuote = n => !/^[A-Za-z_][\w$]*$/.test(n) || RESERVED.has(n.toLowerCase());
+const ident = n => needsQuote(n) ? qid(n) : n;
+let ac = { open: false, items: [], sel: 0, ctx: null };
+
+function getCols(t) {
+  if (!colCache.has(t)) {
+    let cols = [];
+    try { const r = db.exec(`PRAGMA table_info(${qid(t)})`); cols = r.length ? r[0].values.map(v => ({ name: v[1], type: v[2] || "", pk: v[5] > 0 })) : []; } catch (_) {}
+    colCache.set(t, cols);
+  }
+  return colCache.get(t);
+}
+
+function acContext() {
+  const ta = $("q"), pos = ta.selectionStart;
+  if (ta.selectionEnd !== pos) return null;
+  const text = ta.value, before = text.slice(0, pos);
+  const stmtStart = before.lastIndexOf(";") + 1, stmtBefore = before.slice(stmtStart);
+  if ((stmtBefore.match(/'/g) || []).length % 2 === 1) return null;           // inside a string
+  if (before.slice(before.lastIndexOf("\n") + 1).includes("--")) return null;  // inside a comment
+  const m = /(["`]?)([\w$]*)$/.exec(stmtBefore);
+  const rest = stmtBefore.slice(0, stmtBefore.length - m[0].length);
+  const nextSemi = text.indexOf(";", pos), stmt = text.slice(stmtStart, nextSemi < 0 ? text.length : nextSemi);
+  const d = /(["`]?)([\w$]+)\1\s*\.\s*$/.exec(rest);
+  const pw = (/([A-Za-z_]+)\s*$/.exec(rest) || [])[1];
+  return { pos, tokenStart: pos - m[0].length, prefix: m[2], quote: m[1], qualifier: d ? d[2] : null, stmt,
+           tableSlot: (pw && TABLE_KW.has(pw.toUpperCase())) || /table_info\s*\(\s*$/i.test(rest) };
+}
+
+function acCandidates(c) {
+  const p = c.prefix.toLowerCase(), out = [], seen = new Set();
+  const score = n => { n = n.toLowerCase(); return !p || n.startsWith(p) ? 0 : (n.includes("_" + p) || n.includes(" " + p)) ? 1 : n.includes(p) ? 2 : -1; };
+  const add = (label, kind, hint, insert, prio, caretBack) => {
+    const sc = score(label); if (sc < 0) return; const k = kind + label; if (seen.has(k)) return; seen.add(k);
+    out.push({ label, kind, hint, insert, prio, sc, caretBack: caretBack || 0 });
+  };
+  const tbl = n => tables.find(t => t.name.toLowerCase() === String(n).toLowerCase());
+  const addTables = prio => tables.forEach(t => add(t.name, t.type === "view" ? "V" : "T", t.type === "view" ? "view" : `${t.count} rows`, c.quote ? qid(t.name) : ident(t.name), prio));
+  const addCols = (t, prio, withTable) => getCols(t.name).forEach(col => add(col.name, "C", (withTable ? t.name + " · " : "") + (col.type || "") + (col.pk ? " pk" : ""), c.quote ? qid(col.name) : ident(col.name), prio));
+  // aliases: FROM tbl [AS] alias / JOIN tbl [AS] alias
+  const alias = {}, stop = new Set(["WHERE","JOIN","LEFT","RIGHT","INNER","OUTER","CROSS","ON","GROUP","ORDER","LIMIT","UNION","HAVING","SET","USING","NATURAL"]);
+  for (const m of c.stmt.matchAll(/\b(?:from|join)\s+["`]?([\w$]+)["`]?(?:\s+(?:as\s+)?["`]?([A-Za-z_][\w$]*)["`]?)?/gi))
+    if (m[2] && !stop.has(m[2].toUpperCase())) alias[m[2].toLowerCase()] = m[1];
+  if (c.qualifier) {
+    const t = tbl(alias[c.qualifier.toLowerCase()] || c.qualifier); if (!t) return [];
+    add("*", "C", "all columns", "*", 0); addCols(t, 0, false);
+  } else if (c.tableSlot) {
+    addTables(0);
+  } else {
+    const words = new Set((c.stmt.match(/[\w$]+/g) || []).map(w => w.toLowerCase()));
+    let used = tables.filter(t => words.has(t.name.toLowerCase()));
+    if (!used.length && active) used = tables.filter(t => t.name === active);
+    used.forEach(t => addCols(t, 0, used.length > 1));
+    KW.forEach(k => add(k, "K", "keyword", k + (k.endsWith("(") ? "" : " "), 1));
+    FN.forEach(f => add(f, "F", "function", f + "()", 1, 1));
+    addTables(2);
+  }
+  out.sort((a, b) => a.sc - b.sc || a.prio - b.prio || a.label.length - b.label.length || a.label.localeCompare(b.label));
+  return out.slice(0, 60);
+}
+
+function caretXY(ta, pos) {
+  const cs = getComputedStyle(ta), m = document.createElement("div");
+  ["fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","paddingTop","paddingRight","paddingBottom","paddingLeft","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","boxSizing","tabSize"].forEach(k => m.style[k] = cs[k]);
+  m.style.cssText += `;position:fixed;visibility:hidden;top:0;left:0;white-space:pre-wrap;overflow-wrap:break-word;width:${ta.offsetWidth}px`;
+  m.textContent = ta.value.slice(0, pos);
+  const sp = document.createElement("span"); sp.textContent = "\u200b"; m.appendChild(sp); document.body.appendChild(m);
+  const o = { x: sp.offsetLeft, y: sp.offsetTop }; m.remove();
+  const r = ta.getBoundingClientRect(), lh = parseFloat(cs.lineHeight) || 20;
+  return { x: r.left + o.x - ta.scrollLeft, y: r.top + o.y - ta.scrollTop, lh };
+}
+
+function acRender() {
+  const el = $("ac"), c = ac.ctx;
+  el.innerHTML = '<div class="list">' + ac.items.map((it, i) => {
+    const n = esc(it.label), k = c.prefix.length && it.label.toLowerCase().startsWith(c.prefix.toLowerCase()) ? `<b>${esc(it.label.slice(0, c.prefix.length))}</b>${esc(it.label.slice(c.prefix.length))}` : n;
+    return `<div class="it${i === ac.sel ? " sel" : ""}" data-i="${i}"><span class="tag">${it.kind}</span><span class="nm">${k}</span><span class="hint">${esc(it.hint)}</span></div>`;
+  }).join("") + '</div><div class="foot">Up/Down to move · Tab or Enter to insert · Esc to close</div>';
+  el.hidden = false;
+  const xy = caretXY($("q"), c.tokenStart), w = el.offsetWidth, h = el.offsetHeight;
+  let left = Math.max(8, Math.min(xy.x, innerWidth - w - 8)), top = xy.y + xy.lh + 4;
+  if (top + h > innerHeight - 8) top = Math.max(8, xy.y - h - 4);
+  el.style.left = left + "px"; el.style.top = top + "px";
+  const s = el.querySelector(".sel"); if (s) s.scrollIntoView({ block: "nearest" });
+}
+function acClose() { ac.open = false; const el = $("ac"); if (el) el.hidden = true; }
+
+function acUpdate(manual) {
+  if (!db) return acClose();
+  const c = acContext(); if (!c || /^\d/.test(c.prefix)) return acClose();
+  if (!manual && !c.prefix && !c.qualifier && !c.tableSlot) return acClose();
+  const items = acCandidates(c); if (!items.length) return acClose();
+  if (!manual && items.length === 1 && items[0].label.toLowerCase() === c.prefix.toLowerCase()) return acClose();
+  ac = { open: true, items, sel: 0, ctx: c }; acRender();
+}
+
+function acAccept(i) {
+  const it = ac.items[i], c = ac.ctx, ta = $("q"); if (!it) return;
+  const tail = /^[\w$]*/.exec(ta.value.slice(c.pos))[0].length;
+  ta.value = ta.value.slice(0, c.tokenStart) + it.insert + ta.value.slice(c.pos + tail);
+  const caret = c.tokenStart + it.insert.length - it.caretBack; ta.setSelectionRange(caret, caret); ta.focus();
+  acClose();
+  if (it.kind === "K" && TABLE_KW.has(it.label.toUpperCase())) acUpdate(true);   // "FROM " -> show tables right away
+}
+
+(function () {
+  const el = document.createElement("div"); el.id = "ac"; el.className = "ac"; el.hidden = true; document.body.appendChild(el);
+  el.addEventListener("mousedown", e => { e.preventDefault(); const r = e.target.closest(".it"); if (r) acAccept(+r.dataset.i); });
+  const q = $("q");
+  q.addEventListener("input", e => { if (e.inputType === "insertText" || e.inputType === "deleteContentBackward" || e.inputType === "insertFromPaste") acUpdate(false); else acClose(); });
+  q.addEventListener("keydown", e => {
+    if ((e.ctrlKey && e.code === "Space") || (e.altKey && e.key === "/")) { e.preventDefault(); acUpdate(true); return; }
+    if (!ac.open) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); ac.sel = (ac.sel + (e.key === "ArrowDown" ? 1 : -1) + ac.items.length) % ac.items.length; acRender(); }
+    else if ((e.key === "Enter" && !e.ctrlKey && !e.metaKey) || e.key === "Tab") { e.preventDefault(); e.stopImmediatePropagation(); acAccept(ac.sel); }
+    else if (e.key === "Escape") { e.preventDefault(); acClose(); }
+    else if (["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(e.key) || (e.key === "Enter")) acClose();
+  }, true);
+  q.addEventListener("blur", () => acClose());
+  q.addEventListener("mousedown", () => acClose());
+  q.addEventListener("scroll", () => acClose());
+  window.addEventListener("resize", acClose);
+})();
+
+init();
+</script>
+</body>
+</html>

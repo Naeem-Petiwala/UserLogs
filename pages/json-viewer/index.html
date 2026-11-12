@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Viewer · User Logs</title>
+<link rel="icon" href="../../assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="json-viewer.css">
+</head>
+<body data-page="json" class="jvpage">
+<script src="../../assets/js/site.js"></script>
+<main class="jv-main">
+  <section class="card jv-in" aria-label="Input">
+    <div class="jv-docs" id="jvDocs"></div>
+    <div class="jv-head">
+      <div><div class="card-title">Input</div><div class="jv-sub">Nothing is uploaded. It stays in your browser.</div></div>
+      <div class="jv-tools">
+        <button type="button" class="btn sm" id="jvLoad">Load file</button><input type="file" id="jvFile" accept=".json,.txt,application/json,text/plain" hidden>
+        <button type="button" class="btn sm" id="jvLink">From link</button>
+        <button type="button" class="btn sm" id="jvSample">Sample</button>
+        <button type="button" class="btn sm" id="jvClear">Clear</button>
+      </div>
+    </div>
+    <div class="jv-drop" id="jvDrop"><textarea id="jvIn" spellcheck="false" autocomplete="off" placeholder="Paste JSON here, or drop a .json file anywhere on this page…" aria-label="JSON input"></textarea><div class="jv-over">Drop the file to load it</div></div>
+    <div class="jv-act">
+      <button type="button" class="btn primary" id="jvFormat" title="Neat indentation (Ctrl+Enter)">Format</button>
+      <button type="button" class="btn" id="jvMin" title="Remove spaces and line breaks (Ctrl+Shift+M)">Minify</button>
+      <button type="button" class="btn" id="jvSort" title="Sort all keys A to Z">Sort keys</button>
+      <button type="button" class="btn" id="jvFix" title="Repair comments, trailing commas, single quotes, unquoted keys, True/None">Fix mistakes</button>
+      <button type="button" class="btn" id="jvUndo" title="Undo the last change made by a button" disabled>Undo</button>
+      <label>Indent <select id="jvIndent" aria-label="Indent"><option value="2">2 spaces</option><option value="4">4 spaces</option><option value="tab">Tab</option></select></label>
+    </div>
+    <div class="jv-status" id="jvStatus" role="status" aria-live="polite"></div>
+  </section>
+  <section class="card jv-out" aria-label="Result">
+    <div class="jv-head">
+      <div class="jv-tabs" role="tablist"><button type="button" id="tabV" class="on" role="tab">Viewer</button><button type="button" id="tabT" role="tab">Text</button><button type="button" id="tabC" role="tab">Compare</button><button type="button" id="tabX" role="tab">Convert</button></div>
+      <div class="jv-tools">
+        <button type="button" class="btn sm" id="jvExp">Expand all</button><button type="button" class="btn sm" id="jvCol">Collapse all</button>
+        <button type="button" class="btn sm" id="jvCopy">Copy</button><button type="button" class="btn sm" id="jvDl">Download</button>
+        <button type="button" class="btn sm" id="jvHelp" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+      </div>
+    </div>
+    <div class="jv-find" id="jvFind">
+      <div class="jv-mode" role="group" aria-label="Search type"><button type="button" id="mFind" class="on">Find</button><button type="button" id="mQuery">Query</button></div>
+      <input type="search" id="jvQ" placeholder="Search keys and values…  ( / )" autocomplete="off" aria-label="Find or query">
+      <span class="jv-count" id="jvCount" aria-live="polite"></span>
+      <button type="button" class="btn sm" id="jvPrev" title="Previous match (Shift+Enter)" aria-label="Previous match">↑</button><button type="button" class="btn sm" id="jvNext" title="Next match (Enter)" aria-label="Next match">↓</button>
+      <label class="jv-opt" title="Match capital letters exactly"><input type="checkbox" id="jvCase">Aa</label>
+      <select id="jvScope" aria-label="Where to look"><option value="both">Keys and values</option><option value="keys">Keys only</option><option value="values">Values only</option></select>
+    </div>
+    <div class="jv-meta" id="jvMeta"></div>
+    <div class="jv-body" id="jvBody"></div>
+    <div class="jv-path" id="jvPath" hidden>
+      <code id="jvPathText"></code>
+      <span class="jv-pathbtns"><button type="button" class="btn sm" id="pCopyPath">Copy path</button><button type="button" class="btn sm" id="pCopyVal">Copy value</button><button type="button" class="btn sm" id="pEdit">Edit</button><button type="button" class="btn sm" id="pAdd">Add</button><button type="button" class="btn sm danger" id="pDel">Delete</button></span>
+    </div>
+  </section>
+</main>
+<dialog id="jvDlg"><form id="jvDlgForm" novalidate><h2 id="jvDlgTitle"></h2><div id="jvDlgBody"></div><div class="jv-err" id="jvDlgErr" hidden></div><div class="jv-dlgact"><button type="button" class="btn" id="jvDlgNo">Cancel</button><button type="submit" class="btn primary" id="jvDlgOk">OK</button></div></form></dialog>
+<div id="alert" class="alert" role="status" aria-live="polite"></div>
+<script src="jv-core.js"></script>
+<script src="jv-tools.js"></script>
+<script src="json-viewer.js"></script>
+</body>
+</html>

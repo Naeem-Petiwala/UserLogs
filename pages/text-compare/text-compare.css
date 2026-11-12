@@ -1,0 +1,86 @@
+/* Text Compare page only (shared look is in assets/css/theme.css; the add/remove colors are its section 11) */
+.tc-main{width:100%;max-width:1500px;margin:0 auto;padding:20px 24px 28px;display:flex;flex-direction:column;gap:16px}
+.tc-in,.tc-out{padding:0;overflow:hidden}
+.tc-out{scroll-margin-top:70px}
+.tc-head,.tc-bar{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+.tc-head .card-title{margin:0}
+.tc-sub{font-size:12px;color:var(--text-3)}
+.tc-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* the two text boxes */
+.tc-panes{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 18px 0}
+.tc-pane{display:flex;flex-direction:column;gap:8px;min-width:0}
+.tc-phead{display:flex;align-items:center;gap:10px;min-height:22px}
+.tc-phead label{color:var(--text);font-weight:600}
+.tc-count{font-size:12px;color:var(--text-3)}
+.tc-ptools{margin-left:auto;display:flex;gap:14px}
+.tc-drop{position:relative;display:flex}
+.tc-drop textarea{width:100%;height:240px;min-height:120px;resize:vertical;padding:12px 14px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--raised);font:12.5px/1.6 var(--mono);color:var(--text);white-space:pre;overflow:auto;tab-size:2;transition:border-color .15s}
+.tc-drop textarea:hover{border-color:var(--text-3)}
+.tc-drop textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent)}
+.tc-drop textarea::placeholder{color:var(--text-3);font-family:var(--body)}
+.tc-over{position:absolute;inset:0;display:none;align-items:center;justify-content:center;border:2px dashed var(--primary);border-radius:var(--r);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--primary);font-weight:500}
+.tc-drop.drag .tc-over{display:flex}
+.tc-act{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;padding:14px 18px 16px}
+.tc-act .btn.primary{min-width:130px}
+.tc-hint{margin-left:auto;font-size:12.5px;color:var(--text-3)}
+
+/* check boxes and the small select */
+.tc-opt{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:400;color:var(--text-2);cursor:pointer;user-select:none}
+.tc-opt:hover{color:var(--text)}
+.tc-opt input{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:18px;height:18px;padding:0;margin:0;border-radius:5px;border:1px solid var(--line-2);background:var(--raised);transition:all .15s;cursor:pointer}
+.tc-opt input:hover{border-color:var(--text-3)}
+.tc-opt input:checked{background:var(--primary);border-color:var(--primary)}
+.tc-opt input::after{content:'';position:absolute;left:3px;top:3.5px;width:9px;height:4.5px;border-left:2px solid var(--on-primary);border-bottom:2px solid var(--on-primary);transform:rotate(-45deg);opacity:0}
+.tc-opt input:checked::after{opacity:1}
+.tc-opt input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;box-shadow:none}
+.tc-sel{width:auto;height:32px;padding:0 30px 0 10px;font-size:13px}
+.tc-sel-l{margin-left:auto}
+
+/* result toolbar */
+.tc-stats{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:28px}
+.chip.add{color:var(--add-fg);border-color:color-mix(in srgb,var(--add-fg) 40%,transparent)}
+.chip.del{color:var(--del-fg);border-color:color-mix(in srgb,var(--del-fg) 40%,transparent)}
+.tc-tabs{display:inline-grid;grid-auto-flow:column;gap:2px;padding:3px;border-radius:var(--r);background:var(--muted);border:1px solid var(--line)}
+.tc-tabs button{height:28px;padding:0 14px;border:0;border-radius:7px;background:none;color:var(--text-2);font-size:13px;font-weight:500}
+.tc-tabs button.on{background:var(--primary);color:var(--on-primary)}
+.tc-nav{display:inline-flex;align-items:center;gap:6px}
+.tc-nav .btn{width:34px;padding:0;font-size:15px}
+.tc-pos{min-width:64px;text-align:center;font-size:12.5px;color:var(--text-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:disabled:hover{border-color:var(--line-2);color:inherit}
+.tc-opts{display:flex;align-items:center;gap:10px 20px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line)}
+.tc-note{padding:9px 18px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--text-2);background:var(--raised)}
+
+/* the result */
+.tc-body{min-height:300px;max-height:calc(100vh - 290px);overflow:auto;background:var(--muted);overscroll-behavior:contain}
+.tc-empty{display:flex;align-items:center;justify-content:center;min-height:260px;padding:30px;text-align:center;color:var(--text-2);line-height:1.7}
+.tc-empty.same strong{display:block;margin-bottom:4px;font:600 17px var(--display);color:var(--primary)}
+.tc-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font:12.5px/1.6 var(--mono)}
+.tc-tbl td{vertical-align:top;padding:0}
+.tc-tbl td.n{width:54px;padding:0 8px;text-align:right;color:var(--text-3);user-select:none;border-right:1px solid var(--line);background:var(--bg)}
+.tc-tbl td.n.del{background:var(--del-bg);color:var(--del-fg)}
+.tc-tbl td.n.add{background:var(--add-bg);color:var(--add-fg)}
+.tc-tbl td.c{position:relative;padding:0 12px 0 26px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
+.tc-tbl td.c::before{content:attr(data-s);position:absolute;left:9px;color:var(--text-3)}
+.tc-tbl td.c.del{background:var(--del-bg)}.tc-tbl td.c.del::before{color:var(--del-fg)}
+.tc-tbl td.c.add{background:var(--add-bg)}.tc-tbl td.c.add::before{color:var(--add-fg)}
+.tc-tbl td.c.emp{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--line) 6px 7px)}
+.tc-tbl td.c + td.n{border-left:1px solid var(--line)}
+.tc-tbl mark{padding:0;border-radius:3px;color:inherit;background:var(--del-hi)}
+.tc-tbl .add mark{background:var(--add-hi)}
+.tc-tbl tr.cur td{box-shadow:inset 0 1px 0 var(--primary),inset 0 -1px 0 var(--primary)}
+.tc-tbl tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--primary),inset 0 1px 0 var(--primary),inset 0 -1px 0 var(--primary)}
+.tc-tbl tr.fold td{padding:6px 12px;text-align:center;background:var(--raised);border-block:1px solid var(--line)}
+.tc-tbl tr.fold .link-btn{font:12.5px var(--body)}
+.nowrap .tc-tbl{table-layout:auto;width:max-content;min-width:100%}
+.nowrap .tc-tbl td.c{white-space:pre;overflow-wrap:normal}
+
+@media(max-width:900px){
+  .tc-main{padding:14px}
+  .tc-panes{grid-template-columns:1fr}
+  .tc-drop textarea{height:180px}
+  .tc-hint{display:none}
+  .tc-sel-l{margin-left:0}
+  .tc-body{max-height:75vh}
+}

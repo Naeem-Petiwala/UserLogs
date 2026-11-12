@@ -1,85 +1,86 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en" data-theme="dark">
 <head>
-    <title>User Logs Downloader</title>
-    <link rel="icon" href="favicon.png" type="image/png">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Logs</title>
+<link rel="icon" href="assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="stylesheet" href="pages/logs/logs.css">
 </head>
+<body data-page="logs">
+<script src="assets/js/site.js"></script>
+<main class="page">
+  <div class="page-head">
+    <h1>Find a log file</h1>
+    <p>Choose the client, date and rep code, then open the log you need.</p>
+  </div>
 
-<body>
-    <h1>User Logs</h1>
-    <form id="urlForm">
-        <div class="form-row">
-            <div class="form-group">
-                <label for="param1">CLIENT ID</label>
-                <div id="customClientInput" class="custom-input-container hidden">
-                    <input type="text" id="customClientField" placeholder="Enter Client ID" autocomplete="off">
-                </div>
-                <div id="dropdownClientInput" class="dropdown-container">
-                    <select id="param1" name="param1"></select>
-                    <div class="option-arrows">
-                        <span id="downArrow">↑</span>
-                        <span id="upArrow">↓</span>
-                    </div>
-                </div>
-            </div>
+  <form id="urlForm" class="grid" autocomplete="off" onsubmit="return false">
+    <section class="card" aria-label="Details">
+      <div class="card-title">Details</div>
+      <div class="fields">
 
-            <div class="form-group">
-                <label for="param2">DATE</label>
-                <div id="dateField">
-                    <input type="date" id="param2" name="param2">
-                    <span class="arrow-button" id="backArrow">←</span>
-                    <span class="arrow-button" id="forwardArrow">→</span>
-                </div>
-            </div>
+      <div class="field">
+        <div class="label-row">
+          <label for="param1">Client</label>
+          <button type="button" id="customClientBtn" class="link-btn">Enter a custom client ID</button>
         </div>
+        <div id="customClientInput" class="hidden">
+          <input type="text" id="customClientField" placeholder="e.g. HULCP3" autocomplete="off">
+        </div>
+        <div id="dropdownClientInput" class="with-steps">
+          <select id="param1" name="param1"></select>
+          <button type="button" class="step-btn" id="downArrow" title="Previous client" aria-label="Previous client">↑</button>
+          <button type="button" class="step-btn" id="upArrow" title="Next client" aria-label="Next client">↓</button>
+        </div>
+      </div>
 
-        <div class="form-group">
-            <label for="param3">REP CODE / FILE PATH</label>
-            <div id="RepField">
-                <input type="text" id="param3" name="param3" placeholder="Enter Rep Code / File Path" autocomplete="off">
-                <div class="checkBoxDiv">
-                    <div class="checkBoxContainer">
-                        <label for="myCheckbox">LIVE</label>
-                        <input type="checkbox" id="myCheckbox" checked autocomplete="off">
-                    </div>
-                    <div id="dropdownContainer" class="hidden">
-                        <select id="localDrop"></select>
-                    </div>
-                </div>
-            </div>
+      <div class="field">
+        <div class="label-row"><label for="param2">Date</label></div>
+        <div class="with-steps" id="dateField">
+          <button type="button" class="step-btn" id="backArrow" title="Previous day" aria-label="Previous day">←</button>
+          <input type="date" id="param2" name="param2">
+          <button type="button" class="step-btn" id="forwardArrow" title="Next day" aria-label="Next day">→</button>
+          <button type="button" class="step-btn wide" id="todayBtn">Today</button>
         </div>
+      </div>
 
-        <div id="combBtn">
-            <button type="button" class="downloadBtn" id="iOSCP3Logs">iOS CP3 Logs</button>
-            <button type="button" class="downloadBtn" id="iOSCP3LocalLogs">iOS CP3 Local Logs</button>
-            <button type="button" class="downloadBtn" id="iOSLogs">iOS CP2 Logs</button>
-            <button type="button" class="downloadBtn" id="AndroidLogs">Android CP2 Logs</button>
-            <button type="button" class="downloadBtn" id="APILogs">API Logs</button>
-            <button type="button" class="downloadBtn" id="AllLogs">ALL Live Logs</button>
-            <button type="button" class="downloadBtn" id="iOSLocal">iOS Local Logs</button>
-            <button type="button" class="downloadBtn" id="AndroidLocal">Android Local Logs</button>
-            <button type="button" class="downloadBtn" id="APILocal">API Logs Local</button>
-            <button type="button" class="downloadBtn" id="UPWLogs">UPW LOGS</button>
-            <button type="button" class="downloadBtn" id="UPWLocal">UPW Local</button>
-            <button type="button" class="downloadBtn" id="REPOBJ">SUBMITDATA OBJECT</button>
-            <button type="button" class="downloadBtn" id="ImpBtn">IMPORTANT LINKS</button>
-            <button type="button" id="customClientBtn" class="custom-client-btn">Custom Client ID</button>
+      <div class="field" id="RepField">
+        <div class="label-row"><label for="param3">Rep code or file path</label></div>
+        <input type="text" id="param3" name="param3" placeholder="e.g. D0037" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <div class="label-row"><span class="label">Environment</span></div>
+        <div class="env-row">
+          <label class="segmented" for="myCheckbox">
+          <input type="checkbox" id="myCheckbox" checked autocomplete="off">
+          <span class="seg seg-live">Live</span><span class="seg seg-local">Local</span>
+        </label>
+          <div id="dropdownContainer" class="hidden">
+          <select id="localDrop" aria-label="Local environment"></select>
         </div>
-    </form>
-    
-    <div class="bottom-container">
-        <div class="name-container">
-            Version 3.0
         </div>
-        <div class="name-container">
-            Made by Naeem
-        </div>
-    </div>
-    
-    <div id="alert" class="alert"></div>
-    <script src="myscript.js"></script>
+      </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Open logs">
+      <div class="card-head"><div><div class="card-title">Open logs</div><p class="ctx" id="ctx"></p></div><div class="head-actions" id="headActions"><span class="pill" id="modePill">Live</span></div></div>
+      <div class="groups" id="groups"></div>
+      <div class="preview" aria-live="polite"><span class="preview-k">Link</span><code id="previewUrl"></code></div>
+    </section>
+  </form>
+</main>
+
+
+<div id="alert" class="alert" role="status" aria-live="polite"></div>
+<script src="data/config.js"></script>
+<script src="pages/logs/logs-ui.js"></script>
+<script src="pages/logs/logs.js"></script>
 </body>
-
 </html>
